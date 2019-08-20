@@ -34,7 +34,7 @@
     "require": {
         "php": ">=7.2",
         "webignition/php-basil-models": ">=0.59,<1",
-        "webignition/php-basil-model-provider": ">=0.1,<1",
+        "webignition/php-basil-model-provider": ">=0.2,<1",
         "webignition/php-basil-context-aware-exception": ">=0.1,<1"
     },
     "require-dev": {
