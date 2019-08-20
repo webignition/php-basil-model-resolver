@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ce4e39ccef84bed689ce9093ab38b345",
+    "content-hash": "383afec08db0f06d7ff3079be61339cf",
     "packages": [
         {
             "name": "psr/http-message",
@@ -3110,6 +3110,95 @@
             ],
             "description": "A small library for converting tokenized PHP source code into XML and potentially other formats",
             "time": "2019-06-13T22:48:21+00:00"
+        },
+        {
+            "name": "webignition/php-basil-data-structures",
+            "version": "0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webignition/php-basil-data-structures.git",
+                "reference": "dd54868165237dc24f6f5c58abbad5677c6e097d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webignition/php-basil-data-structures/zipball/dd54868165237dc24f6f5c58abbad5677c6e097d",
+                "reference": "dd54868165237dc24f6f5c58abbad5677c6e097d",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.11.5",
+                "phpunit/phpunit": "~8.0",
+                "squizlabs/php_codesniffer": "3.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "webignition\\BasilDataStructure\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Cram",
+                    "email": "webignition@gmail.com"
+                }
+            ],
+            "description": "Data structures for basil language",
+            "homepage": "https://github.com/webignition/php-basil-data-structures",
+            "time": "2019-07-13T11:59:09+00:00"
+        },
+        {
+            "name": "webignition/php-basil-model-factory",
+            "version": "0.15",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webignition/php-basil-model-factory.git",
+                "reference": "381c994eecba725eea94593743a00ccb43c172b1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webignition/php-basil-model-factory/zipball/381c994eecba725eea94593743a00ccb43c172b1",
+                "reference": "381c994eecba725eea94593743a00ccb43c172b1",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "nyholm/psr7": "^1.1",
+                "php": ">=7.2",
+                "webignition/php-basil-context-aware-exception": "^0.1.0",
+                "webignition/php-basil-data-structures": "^0.1.0",
+                "webignition/php-basil-models": ">=0.51,<1"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.11.5",
+                "phpunit/phpunit": "~8.0",
+                "squizlabs/php_codesniffer": "3.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "webignition\\BasilModelFactory\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Cram",
+                    "email": "webignition@gmail.com"
+                }
+            ],
+            "description": "Factories to create basil models",
+            "homepage": "https://github.com/webignition/php-basil-model-factory",
+            "time": "2019-08-14T09:32:40+00:00"
         },
         {
             "name": "webignition/php-basil-test-identifier-factory",
