@@ -12,9 +12,9 @@ class UnknownElementException extends \Exception implements ContextAwareExceptio
 
     private $elementName;
 
-    public function __construct(string $elementName)
+    public function __construct(string $elementName, ?string $message = null)
     {
-        parent::__construct('Unknown element "' . $elementName. '"');
+        parent::__construct($message ?? 'Unknown element "' . $elementName. '"');
 
         $this->elementName = $elementName;
         $this->exceptionContext = new ExceptionContext();
