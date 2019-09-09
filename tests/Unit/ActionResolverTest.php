@@ -15,6 +15,7 @@ use webignition\BasilModel\Identifier\IdentifierCollection;
 use webignition\BasilModel\Identifier\IdentifierCollectionInterface;
 use webignition\BasilModel\Page\Page;
 use webignition\BasilModel\Value\AttributeValue;
+use webignition\BasilModel\Value\CssSelector;
 use webignition\BasilModel\Value\ElementValue;
 use webignition\BasilModel\Value\LiteralValue;
 use webignition\BasilModelFactory\Action\ActionFactory;
@@ -61,7 +62,7 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
                 'action' => new InputAction(
                     'set to "value"',
                     null,
-                    LiteralValue::createStringValue('value'),
+                    new LiteralValue('value'),
                     'to "value"'
                 ),
             ],
@@ -106,7 +107,11 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
     public function resolvePageElementReferencesCreatesNewActionDataProvider(): array
     {
         $actionFactory = ActionFactory::createFactory();
-        $namedCssElementIdentifier = TestIdentifierFactory::createCssElementIdentifier('.selector', 1, 'element_name');
+        $namedCssElementIdentifier = TestIdentifierFactory::createElementIdentifier(
+            new CssSelector('.selector'),
+            1,
+            'element_name'
+        );
 
         return [
             'input action with page element reference identifier' => [
@@ -125,7 +130,7 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
                 'expectedAction' => new InputAction(
                     'set page_import_name.elements.element_name to "value"',
                     $namedCssElementIdentifier,
-                    LiteralValue::createStringValue('value'),
+                    new LiteralValue('value'),
                     'page_import_name.elements.element_name to "value"'
                 ),
             ],
@@ -145,7 +150,7 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
                 'expectedAction' => new InputAction(
                     'set ".selector" to page_import_name.elements.element_name',
                     new ElementIdentifier(
-                        LiteralValue::createCssSelectorValue('.selector')
+                        new CssSelector('.selector')
                     ),
                     new ElementValue($namedCssElementIdentifier),
                     '".selector" to page_import_name.elements.element_name'
@@ -177,7 +182,11 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
     public function resolveElementParametersCreatesNewActionDataProvider(): array
     {
         $actionFactory = ActionFactory::createFactory();
-        $namedCssElementIdentifier = TestIdentifierFactory::createCssElementIdentifier('.selector', 1, 'element_name');
+        $namedCssElementIdentifier = TestIdentifierFactory::createElementIdentifier(
+            new CssSelector('.selector'),
+            1,
+            'element_name'
+        );
 
         return [
             'input action with element parameter identifier' => [
@@ -189,7 +198,7 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
                 'expectedAction' => new InputAction(
                     'set $elements.element_name to "value"',
                     $namedCssElementIdentifier,
-                    LiteralValue::createStringValue('value'),
+                    new LiteralValue('value'),
                     '$elements.element_name to "value"'
                 ),
             ],
@@ -202,7 +211,7 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
                 'expectedAction' => new InputAction(
                     'set ".selector" to $elements.element_name',
                     new ElementIdentifier(
-                        LiteralValue::createCssSelectorValue('.selector')
+                        new CssSelector('.selector')
                     ),
                     new ElementValue($namedCssElementIdentifier),
                     '".selector" to $elements.element_name'
@@ -227,7 +236,11 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
     public function resolveAttributeParametersCreatesNewActionDataProvider(): array
     {
         $actionFactory = ActionFactory::createFactory();
-        $namedCssElementIdentifier = TestIdentifierFactory::createCssElementIdentifier('.selector', 1, 'element_name');
+        $namedCssElementIdentifier = TestIdentifierFactory::createElementIdentifier(
+            new CssSelector('.selector'),
+            1,
+            'element_name'
+        );
 
         return [
             'input action with attribute parameter value' => [
@@ -241,7 +254,7 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
                 'expectedAction' => new InputAction(
                     'set ".selector" to $elements.element_name.attribute_name',
                     new ElementIdentifier(
-                        LiteralValue::createCssSelectorValue('.selector')
+                        new CssSelector('.selector')
                     ),
                     new AttributeValue(
                         new AttributeIdentifier(
