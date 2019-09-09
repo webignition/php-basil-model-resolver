@@ -5,16 +5,16 @@
 namespace webignition\BasilModelResolver\Tests\Unit;
 
 use Nyholm\Psr7\Uri;
-use webignition\BasilModel\Identifier\Identifier;
 use webignition\BasilModel\Identifier\IdentifierCollection;
 use webignition\BasilModel\Identifier\IdentifierCollectionInterface;
 use webignition\BasilModel\Identifier\IdentifierInterface;
 use webignition\BasilModel\Identifier\IdentifierTypes;
+use webignition\BasilModel\Identifier\ReferenceIdentifier;
 use webignition\BasilModel\Page\Page;
-use webignition\BasilModel\Value\LiteralValue;
-use webignition\BasilModel\Value\ObjectNames;
-use webignition\BasilModel\Value\ObjectValue;
-use webignition\BasilModel\Value\ValueTypes;
+use webignition\BasilModel\Value\AttributeReference;
+use webignition\BasilModel\Value\CssSelector;
+use webignition\BasilModel\Value\ElementReference;
+use webignition\BasilModel\Value\PageElementReference;
 use webignition\BasilModelProvider\Page\EmptyPageProvider;
 use webignition\BasilModelProvider\Page\PageProvider;
 use webignition\BasilModelProvider\Page\PageProviderInterface;
@@ -54,12 +54,15 @@ class IdentifierResolverTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'wrong identifier type' => [
-                'identifier' => TestIdentifierFactory::createCssElementIdentifier('.selector'),
+                'identifier' => TestIdentifierFactory::createElementIdentifier(new CssSelector('.selector')),
             ],
             'wrong value type' => [
-                'identifier' => new Identifier(
+                'identifier' => new ReferenceIdentifier(
                     IdentifierTypes::PAGE_ELEMENT_REFERENCE,
-                    LiteralValue::createStringValue('value')
+                    new AttributeReference(
+                        '$elements.element_name.attribute_name',
+                        'element_name.attribute_name'
+                    )
                 ),
             ],
         ];
@@ -81,16 +84,15 @@ class IdentifierResolverTest extends \PHPUnit\Framework\TestCase
 
     public function resolveDataProvider(): array
     {
-        $cssElementIdentifier = TestIdentifierFactory::createCssElementIdentifier('.selector');
+        $cssElementIdentifier = TestIdentifierFactory::createElementIdentifier(new CssSelector('.selector'));
 
         $cssElementIdentifierWithName = $cssElementIdentifier->withName('element_name');
 
         return [
             'resolvable page element reference' => [
-                'identifier' => new Identifier(
+                'identifier' => new ReferenceIdentifier(
                     IdentifierTypes::PAGE_ELEMENT_REFERENCE,
-                    new ObjectValue(
-                        ValueTypes::PAGE_ELEMENT_REFERENCE,
+                    new PageElementReference(
                         'page_import_name.elements.element_name',
                         'page_import_name',
                         'element_name'
@@ -108,14 +110,9 @@ class IdentifierResolverTest extends \PHPUnit\Framework\TestCase
                 'expectedIdentifier' => $cssElementIdentifierWithName,
             ],
             'element parameter' => [
-                'identifier' => new Identifier(
+                'identifier' => new ReferenceIdentifier(
                     IdentifierTypes::ELEMENT_PARAMETER,
-                    new ObjectValue(
-                        ValueTypes::ELEMENT_PARAMETER,
-                        '$elements.element_name',
-                        ObjectNames::ELEMENT,
-                        'element_name'
-                    )
+                    new ElementReference('$elements.element_name', 'element_name')
                 ),
                 'pageProvider' => new EmptyPageProvider(),
                 'identifierCollection' => new IdentifierCollection([
@@ -128,14 +125,9 @@ class IdentifierResolverTest extends \PHPUnit\Framework\TestCase
 
     public function testResolveThrowsUnknownElementException()
     {
-        $identifier = new Identifier(
+        $identifier = new ReferenceIdentifier(
             IdentifierTypes::ELEMENT_PARAMETER,
-            new ObjectValue(
-                ValueTypes::ELEMENT_PARAMETER,
-                '$elements.element_name',
-                ObjectNames::ELEMENT,
-                'element_name'
-            )
+            new ElementReference('$elements.element_name', 'element_name')
         );
 
         $this->expectException(UnknownElementException::class);
