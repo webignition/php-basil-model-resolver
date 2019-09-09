@@ -8,9 +8,8 @@ use Nyholm\Psr7\Uri;
 use webignition\BasilModel\Identifier\IdentifierCollection;
 use webignition\BasilModel\Identifier\IdentifierInterface;
 use webignition\BasilModel\Page\Page;
-use webignition\BasilModel\Value\ObjectValue;
-use webignition\BasilModel\Value\ObjectValueInterface;
-use webignition\BasilModel\Value\ValueTypes;
+use webignition\BasilModel\Value\CssSelector;
+use webignition\BasilModel\Value\PageElementReference;
 use webignition\BasilModelProvider\Page\PageProvider;
 use webignition\BasilModelProvider\Page\PageProviderInterface;
 use webignition\BasilModelResolver\PageElementReferenceResolver;
@@ -35,7 +34,7 @@ class PageElementReferenceResolverTest extends \PHPUnit\Framework\TestCase
      * @dataProvider resolveIsResolvedDataProvider
      */
     public function testResolveIsResolved(
-        ObjectValueInterface $value,
+        PageElementReference $value,
         PageProviderInterface $pageProvider,
         IdentifierInterface $expectedIdentifier
     ) {
@@ -46,13 +45,12 @@ class PageElementReferenceResolverTest extends \PHPUnit\Framework\TestCase
 
     public function resolveIsResolvedDataProvider(): array
     {
-        $cssElementIdentifier = TestIdentifierFactory::createCssElementIdentifier('.selector');
+        $cssElementIdentifier = TestIdentifierFactory::createElementIdentifier(new CssSelector('.selector'));
         $cssElementIdentifierWithName = $cssElementIdentifier->withName('element_name');
 
         return [
             'resolvable' => [
-                'value' => new ObjectValue(
-                    ValueTypes::PAGE_ELEMENT_REFERENCE,
+                'value' => new PageElementReference(
                     'page_import_name.elements.element_name',
                     'page_import_name',
                     'element_name'
@@ -74,7 +72,7 @@ class PageElementReferenceResolverTest extends \PHPUnit\Framework\TestCase
      * @dataProvider resolveThrowsUnknownPageElementExceptionDataProvider
      */
     public function testResolveThrowsUnknownPageElementException(
-        ObjectValueInterface $value,
+        PageElementReference $value,
         PageProviderInterface $pageProvider,
         string $expectedExceptionMessage
     ) {
@@ -88,8 +86,7 @@ class PageElementReferenceResolverTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'element not present in page' => [
-                'value' => new ObjectValue(
-                    ValueTypes::PAGE_ELEMENT_REFERENCE,
+                'value' => new PageElementReference(
                     'page_import_name.elements.element_name',
                     'page_import_name',
                     'element_name'
