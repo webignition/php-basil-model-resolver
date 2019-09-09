@@ -10,14 +10,19 @@ use webignition\BasilModel\Identifier\ElementIdentifier;
 use webignition\BasilModel\Identifier\IdentifierCollection;
 use webignition\BasilModel\Identifier\IdentifierCollectionInterface;
 use webignition\BasilModel\Page\Page;
+use webignition\BasilModel\Value\AttributeReference;
 use webignition\BasilModel\Value\AttributeValue;
+use webignition\BasilModel\Value\BrowserProperty;
+use webignition\BasilModel\Value\CssSelector;
+use webignition\BasilModel\Value\DataParameter;
+use webignition\BasilModel\Value\ElementReference;
 use webignition\BasilModel\Value\ElementValue;
 use webignition\BasilModel\Value\EnvironmentValue;
 use webignition\BasilModel\Value\LiteralValue;
-use webignition\BasilModel\Value\ObjectNames;
-use webignition\BasilModel\Value\ObjectValue;
+use webignition\BasilModel\Value\PageElementReference;
+use webignition\BasilModel\Value\PageProperty;
 use webignition\BasilModel\Value\ValueInterface;
-use webignition\BasilModel\Value\ValueTypes;
+use webignition\BasilModel\Value\XpathExpression;
 use webignition\BasilModelProvider\Page\EmptyPageProvider;
 use webignition\BasilModelProvider\Page\PageProvider;
 use webignition\BasilModelProvider\Page\PageProviderInterface;
@@ -52,52 +57,32 @@ class ValueResolverTest extends \PHPUnit\Framework\TestCase
 
     public function resolveNoChangesDataProvider(): array
     {
-        ValueTypes::ATTRIBUTE_PARAMETER;
-
         return [
             'literal css selector' => [
-                'value' => LiteralValue::createCssSelectorValue('.selector'),
+                'value' => new CssSelector('.selector'),
             ],
             'literal string' => [
-                'value' => LiteralValue::createStringValue('value'),
+                'value' => new LiteralValue('value'),
             ],
             'literal xpath expression' => [
-                'value' => LiteralValue::createXpathExpressionValue('//h1'),
+                'value' => new XpathExpression('//h1'),
             ],
             'browser object property' => [
-                'value' => new ObjectValue(
-                    ValueTypes::BROWSER_OBJECT_PROPERTY,
-                    '$browser.size',
-                    ObjectNames::BROWSER,
-                    'size'
-                ),
+                'value' => new BrowserProperty('$browser.size', 'size'),
             ],
             'data parameter' => [
-                'value' => new ObjectValue(
-                    ValueTypes::DATA_PARAMETER,
-                    '$data.key',
-                    ObjectNames::DATA,
-                    'key'
-                ),
+                'value' => new DataParameter('$data.key', 'key'),
             ],
             'page object property' => [
-                'value' => new ObjectValue(
-                    ValueTypes::PAGE_OBJECT_PROPERTY,
-                    '$page.url',
-                    ObjectNames::PAGE,
-                    'url'
-                ),
+                'value' => new PageProperty('$page.url', 'url'),
             ],
             'environment parameter' => [
-                'value' => new EnvironmentValue(
-                    '$env.KEY',
-                    'KEY'
-                ),
+                'value' => new EnvironmentValue('$env.KEY', 'KEY'),
             ],
             'element value' => [
                 'value' => new ElementValue(
                     new ElementIdentifier(
-                        LiteralValue::createStringValue('.selector')
+                        new CssSelector('.selector')
                     )
                 ),
             ],
@@ -105,17 +90,15 @@ class ValueResolverTest extends \PHPUnit\Framework\TestCase
                 'value' => new AttributeValue(
                     new AttributeIdentifier(
                         new ElementIdentifier(
-                            LiteralValue::createStringValue('.selector')
+                            new CssSelector('.selector')
                         ),
                         'attribute_name'
                     )
                 ),
             ],
             'malformed attribute parameter' => [
-                'value' => new ObjectValue(
-                    ValueTypes::ATTRIBUTE_PARAMETER,
+                'value' => new AttributeReference(
                     '$elements.element_attribute_name',
-                    ObjectNames::ELEMENT,
                     'element_attribute_name'
                 )
             ],
@@ -139,12 +122,15 @@ class ValueResolverTest extends \PHPUnit\Framework\TestCase
 
     public function resolveCreatesNewValueDataProvider(): array
     {
-        $namedCssSelectorIdentifier = TestIdentifierFactory::createCssElementIdentifier('.selector', 1, 'element_name');
+        $namedCssSelectorIdentifier = TestIdentifierFactory::createElementIdentifier(
+            new CssSelector('.selector'),
+            1,
+            'element_name'
+        );
 
         return [
             'page element reference' => [
-                'value' => new ObjectValue(
-                    ValueTypes::PAGE_ELEMENT_REFERENCE,
+                'value' => new PageElementReference(
                     'page_import_name.elements.element_name',
                     'page_import_name',
                     'element_name'
@@ -161,12 +147,7 @@ class ValueResolverTest extends \PHPUnit\Framework\TestCase
                 'expectedValue' => new ElementValue($namedCssSelectorIdentifier)
             ],
             'element parameter' => [
-                'value' => new ObjectValue(
-                    ValueTypes::ELEMENT_PARAMETER,
-                    '$elements.element_name',
-                    ObjectNames::ELEMENT,
-                    'element_name'
-                ),
+                'value' => new ElementReference('$elements.element_name', 'element_name'),
                 'pageProvider' => new EmptyPageProvider(),
                 'identifierCollection' => new IdentifierCollection([
                     $namedCssSelectorIdentifier,
@@ -174,10 +155,8 @@ class ValueResolverTest extends \PHPUnit\Framework\TestCase
                 'expectedValue' => new ElementValue($namedCssSelectorIdentifier)
             ],
             'attribute parameter parameter' => [
-                'value' => new ObjectValue(
-                    ValueTypes::ATTRIBUTE_PARAMETER,
+                'value' => new AttributeReference(
                     '$elements.element_name.attribute_name',
-                    ObjectNames::ELEMENT,
                     'element_name.attribute_name'
                 ),
                 'pageProvider' => new EmptyPageProvider(),
@@ -196,12 +175,7 @@ class ValueResolverTest extends \PHPUnit\Framework\TestCase
 
     public function testResolveThrowsUnknownElementException()
     {
-        $value = new ObjectValue(
-            ValueTypes::ELEMENT_PARAMETER,
-            '$elements.element_name',
-            ObjectNames::ELEMENT,
-            'element_name'
-        );
+        $value = new ElementReference('$elements.element_name', 'element_name');
 
         $this->expectException(UnknownElementException::class);
         $this->expectExceptionMessage('Unknown element "element_name"');
