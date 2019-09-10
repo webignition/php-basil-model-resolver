@@ -8,7 +8,6 @@ use Nyholm\Psr7\Uri;
 use webignition\BasilModel\Identifier\IdentifierCollection;
 use webignition\BasilModel\Identifier\IdentifierCollectionInterface;
 use webignition\BasilModel\Identifier\IdentifierInterface;
-use webignition\BasilModel\Identifier\IdentifierTypes;
 use webignition\BasilModel\Identifier\ReferenceIdentifier;
 use webignition\BasilModel\Page\Page;
 use webignition\BasilModel\Value\AttributeReference;
@@ -57,8 +56,7 @@ class IdentifierResolverTest extends \PHPUnit\Framework\TestCase
                 'identifier' => TestIdentifierFactory::createElementIdentifier(new CssSelector('.selector')),
             ],
             'wrong value type' => [
-                'identifier' => new ReferenceIdentifier(
-                    IdentifierTypes::PAGE_ELEMENT_REFERENCE,
+                'identifier' => ReferenceIdentifier::createPageElementReferenceIdentifier(
                     new AttributeReference(
                         '$elements.element_name.attribute_name',
                         'element_name.attribute_name'
@@ -90,8 +88,7 @@ class IdentifierResolverTest extends \PHPUnit\Framework\TestCase
 
         return [
             'resolvable page element reference' => [
-                'identifier' => new ReferenceIdentifier(
-                    IdentifierTypes::PAGE_ELEMENT_REFERENCE,
+                'identifier' => ReferenceIdentifier::createPageElementReferenceIdentifier(
                     new PageElementReference(
                         'page_import_name.elements.element_name',
                         'page_import_name',
@@ -110,8 +107,7 @@ class IdentifierResolverTest extends \PHPUnit\Framework\TestCase
                 'expectedIdentifier' => $cssElementIdentifierWithName,
             ],
             'element parameter' => [
-                'identifier' => new ReferenceIdentifier(
-                    IdentifierTypes::ELEMENT_PARAMETER,
+                'identifier' => ReferenceIdentifier::createElementReferenceIdentifier(
                     new ElementReference('$elements.element_name', 'element_name')
                 ),
                 'pageProvider' => new EmptyPageProvider(),
@@ -125,8 +121,7 @@ class IdentifierResolverTest extends \PHPUnit\Framework\TestCase
 
     public function testResolveThrowsUnknownElementException()
     {
-        $identifier = new ReferenceIdentifier(
-            IdentifierTypes::ELEMENT_PARAMETER,
+        $identifier = ReferenceIdentifier::createElementReferenceIdentifier(
             new ElementReference('$elements.element_name', 'element_name')
         );
 

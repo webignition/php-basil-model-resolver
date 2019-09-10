@@ -15,7 +15,6 @@ use webignition\BasilModel\Assertion\Assertion;
 use webignition\BasilModel\Assertion\AssertionComparisons;
 use webignition\BasilModel\Identifier\AttributeIdentifier;
 use webignition\BasilModel\Identifier\IdentifierCollection;
-use webignition\BasilModel\Identifier\IdentifierTypes;
 use webignition\BasilModel\Identifier\ReferenceIdentifier;
 use webignition\BasilModel\Page\Page;
 use webignition\BasilModel\Step\PendingImportResolutionStep;
@@ -654,8 +653,7 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
                     new InteractionAction(
                         'click page_import_name.elements.element_name',
                         ActionTypes::CLICK,
-                        new ReferenceIdentifier(
-                            IdentifierTypes::PAGE_ELEMENT_REFERENCE,
+                        ReferenceIdentifier::createPageElementReferenceIdentifier(
                             new PageElementReference(
                                 'page_import_name.elements.element_name',
                                 'page_import_name',
@@ -706,8 +704,7 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
                     new InteractionAction(
                         'click page_import_name.elements.element_name',
                         ActionTypes::CLICK,
-                        new ReferenceIdentifier(
-                            IdentifierTypes::PAGE_ELEMENT_REFERENCE,
+                        ReferenceIdentifier::createPageElementReferenceIdentifier(
                             new PageElementReference(
                                 'page_import_name.elements.element_name',
                                 'page_import_name',
@@ -743,13 +740,12 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
                     ExceptionContextInterface::KEY_CONTENT => 'page_import_name.elements.element_name exists',
                 ]),
             ],
-            'UnknownElementException: action has element parameter reference, element missing' => [
+            'UnknownElementException: action has element reference, element missing' => [
                 'step' => new Step([
                     new InteractionAction(
                         'click $elements.element_name',
                         ActionTypes::CLICK,
-                        new ReferenceIdentifier(
-                            IdentifierTypes::ELEMENT_PARAMETER,
+                        ReferenceIdentifier::createElementReferenceIdentifier(
                             new ElementReference('$elements.element_name', 'element_name')
                         ),
                         '$elements.element_name'

@@ -5,8 +5,8 @@ namespace webignition\BasilModelResolver;
 use webignition\BasilModel\Identifier\ElementIdentifierInterface;
 use webignition\BasilModel\Identifier\IdentifierCollectionInterface;
 use webignition\BasilModel\Identifier\IdentifierInterface;
-use webignition\BasilModel\Identifier\IdentifierTypes;
-use webignition\BasilModel\Identifier\ReferenceIdentifier;
+use webignition\BasilModel\Identifier\ReferenceIdentifierInterface;
+use webignition\BasilModel\Identifier\ReferenceIdentifierTypes;
 use webignition\BasilModel\Value\ElementReference;
 use webignition\BasilModel\Value\PageElementReference;
 use webignition\BasilModelProvider\Exception\UnknownPageException;
@@ -44,8 +44,8 @@ class IdentifierResolver
         PageProviderInterface $pageProvider,
         IdentifierCollectionInterface $identifierCollection
     ): IdentifierInterface {
-        if ($identifier instanceof ReferenceIdentifier) {
-            if (IdentifierTypes::PAGE_ELEMENT_REFERENCE === $identifier->getType()) {
+        if ($identifier instanceof ReferenceIdentifierInterface) {
+            if (ReferenceIdentifierTypes::PAGE_ELEMENT_REFERENCE === $identifier->getType()) {
                 $value = $identifier->getValue();
 
                 if ($value instanceof PageElementReference) {
@@ -53,7 +53,7 @@ class IdentifierResolver
                 }
             }
 
-            if (IdentifierTypes::ELEMENT_PARAMETER === $identifier->getType()) {
+            if (ReferenceIdentifierTypes::ELEMENT_REFERENCE === $identifier->getType()) {
                 $value = $identifier->getValue();
 
                 if ($value instanceof ElementReference) {
