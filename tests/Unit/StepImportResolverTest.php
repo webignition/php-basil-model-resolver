@@ -62,15 +62,11 @@ class StepImportResolverTest extends \PHPUnit\Framework\TestCase
         $resolvableActions = [
             $actionFactory->createFromActionString('click page_import_name.elements.element_name'),
             $actionFactory->createFromActionString('click $elements.element_name'),
-            $actionFactory->createFromActionString('click $elements.element_name.attribute_name'),
             $actionFactory->createFromActionString(
                 'set page_import_name.elements.element_name to page_import_name.elements.element_name'
             ),
             $actionFactory->createFromActionString(
                 'set $elements.element_name to $elements.element_name'
-            ),
-            $actionFactory->createFromActionString(
-                'set $elements.element_name.attribute_name to $elements.element_name.attribute_name'
             ),
         ];
 
