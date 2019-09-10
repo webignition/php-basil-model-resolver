@@ -23,11 +23,10 @@ use webignition\BasilModel\Step\Step;
 use webignition\BasilModel\Test\Configuration;
 use webignition\BasilModel\Test\Test;
 use webignition\BasilModel\Test\TestInterface;
+use webignition\BasilModel\Value\CssSelector;
+use webignition\BasilModel\Value\DataParameter;
 use webignition\BasilModel\Value\ElementValue;
-use webignition\BasilModel\Value\LiteralValue;
-use webignition\BasilModel\Value\ObjectNames;
-use webignition\BasilModel\Value\ObjectValue;
-use webignition\BasilModel\Value\ValueTypes;
+use webignition\BasilModel\Value\PageElementReference;
 use webignition\BasilModelFactory\Action\ActionFactory;
 use webignition\BasilModelFactory\AssertionFactory;
 use webignition\BasilModelProvider\DataSet\DataSetProvider;
@@ -82,28 +81,27 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
         $assertionFactory = AssertionFactory::createFactory();
 
         $actionSelectorIdentifier = new ElementIdentifier(
-            LiteralValue::createCssSelectorValue('.action-selector')
+            new CssSelector('.action-selector')
         );
 
         $assertionSelectorIdentifier = new ElementIdentifier(
-            LiteralValue::createCssSelectorValue('.assertion-selector')
+            new CssSelector('.assertion-selector')
         );
 
-        $namedActionSelectorIdentifier = TestIdentifierFactory::createCssElementIdentifier(
-            '.action-selector',
+        $namedActionSelectorIdentifier = TestIdentifierFactory::createElementIdentifier(
+            new CssSelector('.action-selector'),
             1,
             'action_selector'
         );
 
-        $namedAssertionSelectorIdentifier = TestIdentifierFactory::createCssElementIdentifier(
-            '.assertion-selector',
+        $namedAssertionSelectorIdentifier = TestIdentifierFactory::createElementIdentifier(
+            new CssSelector('.assertion-selector'),
             1,
             'assertion_selector'
         );
 
         $pageElementReferenceActionIdentifier = TestIdentifierFactory::createPageElementReferenceIdentifier(
-            new ObjectValue(
-                ValueTypes::PAGE_ELEMENT_REFERENCE,
+            new PageElementReference(
                 'page_import_name.elements.action_selector',
                 'page_import_name',
                 'action_selector'
@@ -112,8 +110,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
         );
 
         $pageElementReferenceAssertionIdentifier = TestIdentifierFactory::createPageElementReferenceIdentifier(
-            new ObjectValue(
-                ValueTypes::PAGE_ELEMENT_REFERENCE,
+            new PageElementReference(
                 'page_import_name.elements.assertion_selector',
                 'page_import_name',
                 'assertion_selector'
@@ -383,12 +380,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                             new InputAction(
                                 'set ".action-selector" to $data.key1',
                                 $actionSelectorIdentifier,
-                                new ObjectValue(
-                                    ValueTypes::DATA_PARAMETER,
-                                    '$data.key1',
-                                    ObjectNames::DATA,
-                                    'key1'
-                                ),
+                                new DataParameter('$data.key1', 'key1'),
                                 '".action-selector" to $data.key1'
                             )
                         ],
@@ -397,12 +389,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                                 '".assertion-selector" is $data.key2',
                                 new ElementValue($assertionSelectorIdentifier),
                                 AssertionComparisons::IS,
-                                new ObjectValue(
-                                    ValueTypes::DATA_PARAMETER,
-                                    '$data.key2',
-                                    ObjectNames::DATA,
-                                    'key2'
-                                )
+                                new DataParameter('$data.key2', 'key2')
                             )
                         ]
                     ))->withDataSetCollection(new DataSetCollection([
@@ -458,12 +445,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                             new InputAction(
                                 'set ".action-selector" to $data.key1',
                                 $actionSelectorIdentifier,
-                                new ObjectValue(
-                                    ValueTypes::DATA_PARAMETER,
-                                    '$data.key1',
-                                    ObjectNames::DATA,
-                                    'key1'
-                                ),
+                                new DataParameter('$data.key1', 'key1'),
                                 '".action-selector" to $data.key1'
                             )
                         ],
@@ -472,12 +454,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                                 '".assertion-selector" is $data.key2',
                                 new ElementValue($assertionSelectorIdentifier),
                                 AssertionComparisons::IS,
-                                new ObjectValue(
-                                    ValueTypes::DATA_PARAMETER,
-                                    '$data.key2',
-                                    ObjectNames::DATA,
-                                    'key2'
-                                )
+                                new DataParameter('$data.key2', 'key2')
                             )
                         ]
                     ))->withDataSetCollection(new DataSetCollection([
@@ -511,9 +488,13 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                     'page_import_name' => new Page(
                         new Uri('https://example.com'),
                         new IdentifierCollection([
-                            TestIdentifierFactory::createCssElementIdentifier('.action-selector', 1, 'action_selector'),
-                            TestIdentifierFactory::createCssElementIdentifier(
-                                '.assertion-selector',
+                            TestIdentifierFactory::createElementIdentifier(
+                                new CssSelector('.action-selector'),
+                                1,
+                                'action_selector'
+                            ),
+                            TestIdentifierFactory::createElementIdentifier(
+                                new CssSelector('.assertion-selector'),
                                 1,
                                 'assertion_selector'
                             ),
@@ -584,9 +565,13 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                     'page_import_name' => new Page(
                         new Uri('https://example.com'),
                         new IdentifierCollection([
-                            TestIdentifierFactory::createCssElementIdentifier('.action-selector', 1, 'action_selector'),
-                            TestIdentifierFactory::createCssElementIdentifier(
-                                '.assertion-selector',
+                            TestIdentifierFactory::createElementIdentifier(
+                                new CssSelector('.action-selector'),
+                                1,
+                                'action_selector'
+                            ),
+                            TestIdentifierFactory::createElementIdentifier(
+                                new CssSelector('.assertion-selector'),
                                 1,
                                 'assertion_selector'
                             ),
@@ -604,12 +589,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                             new InputAction(
                                 'set $elements.action_selector to $data.key1',
                                 $namedActionSelectorIdentifier,
-                                new ObjectValue(
-                                    ValueTypes::DATA_PARAMETER,
-                                    '$data.key1',
-                                    ObjectNames::DATA,
-                                    'key1'
-                                ),
+                                new DataParameter('$data.key1', 'key1'),
                                 '$elements.action_selector to $data.key1'
                             )
                         ],
@@ -618,12 +598,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                                 '$elements.assertion_selector is $data.key2',
                                 new ElementValue($namedAssertionSelectorIdentifier),
                                 AssertionComparisons::IS,
-                                new ObjectValue(
-                                    ValueTypes::DATA_PARAMETER,
-                                    '$data.key2',
-                                    ObjectNames::DATA,
-                                    'key2'
-                                )
+                                new DataParameter('$data.key2', 'key2')
                             )
                         ]
                     ),
@@ -646,12 +621,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                             new InputAction(
                                 'set $elements.action_selector to $data.key1',
                                 $namedActionSelectorIdentifier,
-                                new ObjectValue(
-                                    ValueTypes::DATA_PARAMETER,
-                                    '$data.key1',
-                                    ObjectNames::DATA,
-                                    'key1'
-                                ),
+                                new DataParameter('$data.key1', 'key1'),
                                 '$elements.action_selector to $data.key1'
                             )
                         ],
@@ -660,12 +630,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                                 '$elements.assertion_selector is $data.key2',
                                 new ElementValue($namedAssertionSelectorIdentifier),
                                 AssertionComparisons::IS,
-                                new ObjectValue(
-                                    ValueTypes::DATA_PARAMETER,
-                                    '$data.key2',
-                                    ObjectNames::DATA,
-                                    'key2'
-                                )
+                                new DataParameter('$data.key2', 'key2')
                             )
                         ]
                     ))->withDataSetCollection(new DataSetCollection([
@@ -803,8 +768,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                     [
                         'step name' => (new Step([], []))->withIdentifierCollection(new IdentifierCollection([
                             TestIdentifierFactory::createPageElementReferenceIdentifier(
-                                new ObjectValue(
-                                    ValueTypes::PAGE_ELEMENT_REFERENCE,
+                                new PageElementReference(
                                     'page_import_name.elements.non_existent',
                                     'page_import_name',
                                     'non_existent'

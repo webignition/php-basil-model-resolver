@@ -9,8 +9,6 @@ use webignition\BasilModelProvider\Page\PageProviderInterface;
 
 class AssertionResolver
 {
-    const ELEMENT_NAME_ATTRIBUTE_NAME_DELIMITER = '.';
-
     private $valueResolver;
 
     public function __construct(ValueResolver $valueResolver)

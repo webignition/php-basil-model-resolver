@@ -6,7 +6,9 @@ use webignition\BasilModel\Identifier\ElementIdentifierInterface;
 use webignition\BasilModel\Identifier\IdentifierCollectionInterface;
 use webignition\BasilModel\Identifier\IdentifierInterface;
 use webignition\BasilModel\Identifier\IdentifierTypes;
-use webignition\BasilModel\Value\ObjectValue;
+use webignition\BasilModel\Identifier\ReferenceIdentifier;
+use webignition\BasilModel\Value\ElementReference;
+use webignition\BasilModel\Value\PageElementReference;
 use webignition\BasilModelProvider\Exception\UnknownPageException;
 use webignition\BasilModelProvider\Page\PageProviderInterface;
 
@@ -42,26 +44,28 @@ class IdentifierResolver
         PageProviderInterface $pageProvider,
         IdentifierCollectionInterface $identifierCollection
     ): IdentifierInterface {
-        if (IdentifierTypes::PAGE_ELEMENT_REFERENCE === $identifier->getType()) {
-            $value = $identifier->getValue();
+        if ($identifier instanceof ReferenceIdentifier) {
+            if (IdentifierTypes::PAGE_ELEMENT_REFERENCE === $identifier->getType()) {
+                $value = $identifier->getValue();
 
-            if ($value instanceof ObjectValue) {
-                return $this->pageElementReferenceResolver->resolve($value, $pageProvider);
-            }
-        }
-
-        if (IdentifierTypes::ELEMENT_PARAMETER === $identifier->getType()) {
-            $value = $identifier->getValue();
-
-            if ($value instanceof ObjectValue) {
-                $elementName = $value->getObjectProperty();
-                $resolvedIdentifier = $identifierCollection->getIdentifier($elementName);
-
-                if ($resolvedIdentifier instanceof ElementIdentifierInterface) {
-                    return $resolvedIdentifier;
+                if ($value instanceof PageElementReference) {
+                    return $this->pageElementReferenceResolver->resolve($value, $pageProvider);
                 }
+            }
 
-                throw new UnknownElementException($elementName);
+            if (IdentifierTypes::ELEMENT_PARAMETER === $identifier->getType()) {
+                $value = $identifier->getValue();
+
+                if ($value instanceof ElementReference) {
+                    $elementName = $value->getProperty();
+                    $resolvedIdentifier = $identifierCollection->getIdentifier($elementName);
+
+                    if ($resolvedIdentifier instanceof ElementIdentifierInterface) {
+                        return $resolvedIdentifier;
+                    }
+
+                    throw new UnknownElementException($elementName);
+                }
             }
         }
 

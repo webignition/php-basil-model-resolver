@@ -3,7 +3,7 @@
 namespace webignition\BasilModelResolver;
 
 use webignition\BasilModel\Identifier\ElementIdentifierInterface;
-use webignition\BasilModel\Value\ObjectValueInterface;
+use webignition\BasilModel\Value\PageElementReference;
 use webignition\BasilModelProvider\Exception\UnknownPageException;
 use webignition\BasilModelProvider\Page\PageProviderInterface;
 
@@ -15,7 +15,7 @@ class PageElementReferenceResolver
     }
 
     /**
-     * @param ObjectValueInterface $value
+     * @param PageElementReference $value
      * @param PageProviderInterface $pageProvider
      *
      * @return ElementIdentifierInterface
@@ -24,16 +24,16 @@ class PageElementReferenceResolver
      * @throws UnknownPageException
      */
     public function resolve(
-        ObjectValueInterface $value,
+        PageElementReference $value,
         PageProviderInterface $pageProvider
     ): ElementIdentifierInterface {
-        $page = $pageProvider->findPage($value->getObjectName());
-        $elementIdentifier = $page->getIdentifier($value->getObjectProperty());
+        $page = $pageProvider->findPage($value->getObject());
+        $elementIdentifier = $page->getIdentifier($value->getProperty());
 
         if ($elementIdentifier instanceof ElementIdentifierInterface) {
             return $elementIdentifier;
         }
 
-        throw new UnknownPageElementException($value->getObjectName(), $value->getObjectProperty());
+        throw new UnknownPageElementException($value->getObject(), $value->getProperty());
     }
 }
