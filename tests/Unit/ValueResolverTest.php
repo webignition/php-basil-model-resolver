@@ -13,8 +13,9 @@ use webignition\BasilModel\Page\Page;
 use webignition\BasilModel\Value\AttributeReference;
 use webignition\BasilModel\Value\AttributeValue;
 use webignition\BasilModel\Value\BrowserProperty;
-use webignition\BasilModel\Value\CssSelector;
 use webignition\BasilModel\Value\DataParameter;
+use webignition\BasilModel\Value\ElementExpression;
+use webignition\BasilModel\Value\ElementExpressionType;
 use webignition\BasilModel\Value\ElementReference;
 use webignition\BasilModel\Value\ElementValue;
 use webignition\BasilModel\Value\EnvironmentValue;
@@ -22,7 +23,6 @@ use webignition\BasilModel\Value\LiteralValue;
 use webignition\BasilModel\Value\PageElementReference;
 use webignition\BasilModel\Value\PageProperty;
 use webignition\BasilModel\Value\ValueInterface;
-use webignition\BasilModel\Value\XpathExpression;
 use webignition\BasilModelProvider\Page\EmptyPageProvider;
 use webignition\BasilModelProvider\Page\PageProvider;
 use webignition\BasilModelProvider\Page\PageProviderInterface;
@@ -59,13 +59,13 @@ class ValueResolverTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'literal css selector' => [
-                'value' => new CssSelector('.selector'),
+                'value' => new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR),
             ],
             'literal string' => [
                 'value' => new LiteralValue('value'),
             ],
             'literal xpath expression' => [
-                'value' => new XpathExpression('//h1'),
+                'value' => new ElementExpression('//h1', ElementExpressionType::XPATH_EXPRESSION),
             ],
             'browser object property' => [
                 'value' => new BrowserProperty('$browser.size', 'size'),
@@ -82,7 +82,7 @@ class ValueResolverTest extends \PHPUnit\Framework\TestCase
             'element value' => [
                 'value' => new ElementValue(
                     new ElementIdentifier(
-                        new CssSelector('.selector')
+                        new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR)
                     )
                 ),
             ],
@@ -90,7 +90,7 @@ class ValueResolverTest extends \PHPUnit\Framework\TestCase
                 'value' => new AttributeValue(
                     new AttributeIdentifier(
                         new ElementIdentifier(
-                            new CssSelector('.selector')
+                            new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR)
                         ),
                         'attribute_name'
                     )
@@ -123,7 +123,7 @@ class ValueResolverTest extends \PHPUnit\Framework\TestCase
     public function resolveCreatesNewValueDataProvider(): array
     {
         $namedCssSelectorIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new CssSelector('.selector'),
+            new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR),
             1,
             'element_name'
         );

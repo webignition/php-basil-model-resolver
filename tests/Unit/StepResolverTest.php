@@ -24,7 +24,8 @@ use webignition\BasilModel\Step\StepInterface;
 use webignition\BasilModel\Value\AssertionExaminedValue;
 use webignition\BasilModel\Value\AssertionExpectedValue;
 use webignition\BasilModel\Value\AttributeValue;
-use webignition\BasilModel\Value\CssSelector;
+use webignition\BasilModel\Value\ElementExpression;
+use webignition\BasilModel\Value\ElementExpressionType;
 use webignition\BasilModel\Value\ElementReference;
 use webignition\BasilModel\Value\ElementValue;
 use webignition\BasilModel\Value\LiteralValue;
@@ -108,7 +109,7 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
         ];
 
         $namedCssElementIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new CssSelector('.selector'),
+            new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR),
             1,
             'element_name'
         );
@@ -140,7 +141,9 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
             ),
             new InputAction(
                 'set ".selector" to $elements.element_name.attribute_name',
-                TestIdentifierFactory::createElementIdentifier(new CssSelector('.selector')),
+                TestIdentifierFactory::createElementIdentifier(
+                    new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR)
+                ),
                 new AttributeValue(
                     new AttributeIdentifier($namedCssElementIdentifier, 'attribute_name')
                 ),
@@ -272,17 +275,17 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
         $assertionFactory = AssertionFactory::createFactory();
 
         $examinedIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new CssSelector('.examined-selector')
+            new ElementExpression('.examined-selector', ElementExpressionType::CSS_SELECTOR)
         );
 
         $namedExaminedIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new CssSelector('.examined-selector'),
+            new ElementExpression('.examined-selector', ElementExpressionType::CSS_SELECTOR),
             1,
             'examined'
         );
 
         $namedExpectedIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new CssSelector('.expected-selector'),
+            new ElementExpression('.expected-selector', ElementExpressionType::CSS_SELECTOR),
             1,
             'expected'
         );
@@ -535,11 +538,15 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
             ],
             'non-resolvable identifier collection: no resolvable element identifiers' => [
                 'step' => (new Step([], []))->withIdentifierCollection(new IdentifierCollection([
-                    TestIdentifierFactory::createElementIdentifier(new CssSelector('.selector')),
+                    TestIdentifierFactory::createElementIdentifier(
+                        new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR)
+                    ),
                 ])),
                 'pageProvider' => new EmptyPageProvider(),
                 'expectedStep' => (new Step([], []))->withIdentifierCollection(new IdentifierCollection([
-                    TestIdentifierFactory::createElementIdentifier(new CssSelector('.selector')),
+                    TestIdentifierFactory::createElementIdentifier(
+                        new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR)
+                    ),
                 ]))
             ],
         ];
@@ -560,7 +567,7 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
         );
 
         $resolvedElementIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new CssSelector('.selector'),
+            new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR),
             1,
             'element_name'
         );

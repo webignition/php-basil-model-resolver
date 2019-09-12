@@ -11,7 +11,8 @@ use webignition\BasilModel\Identifier\IdentifierInterface;
 use webignition\BasilModel\Identifier\ReferenceIdentifier;
 use webignition\BasilModel\Page\Page;
 use webignition\BasilModel\Value\AttributeReference;
-use webignition\BasilModel\Value\CssSelector;
+use webignition\BasilModel\Value\ElementExpression;
+use webignition\BasilModel\Value\ElementExpressionType;
 use webignition\BasilModel\Value\ElementReference;
 use webignition\BasilModel\Value\PageElementReference;
 use webignition\BasilModelProvider\Page\EmptyPageProvider;
@@ -53,7 +54,9 @@ class IdentifierResolverTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'wrong identifier type' => [
-                'identifier' => TestIdentifierFactory::createElementIdentifier(new CssSelector('.selector')),
+                'identifier' => TestIdentifierFactory::createElementIdentifier(
+                    new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR)
+                ),
             ],
             'wrong value type' => [
                 'identifier' => ReferenceIdentifier::createPageElementReferenceIdentifier(
@@ -82,7 +85,9 @@ class IdentifierResolverTest extends \PHPUnit\Framework\TestCase
 
     public function resolveDataProvider(): array
     {
-        $cssElementIdentifier = TestIdentifierFactory::createElementIdentifier(new CssSelector('.selector'));
+        $cssElementIdentifier = TestIdentifierFactory::createElementIdentifier(
+            new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR)
+        );
 
         $cssElementIdentifierWithName = $cssElementIdentifier->withName('element_name');
 
