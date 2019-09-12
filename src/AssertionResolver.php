@@ -3,7 +3,8 @@
 namespace webignition\BasilModelResolver;
 
 use webignition\BasilModel\Assertion\AssertionInterface;
-use webignition\BasilModel\Assertion\ValueComparisonAssertionInterface;
+use webignition\BasilModel\Assertion\ComparisonAssertionInterface;
+use webignition\BasilModel\Assertion\ExaminationAssertionInterface;
 use webignition\BasilModel\Exception\InvalidAssertionExaminedValueException;
 use webignition\BasilModel\Exception\InvalidAssertionExpectedValueException;
 use webignition\BasilModel\Identifier\IdentifierCollectionInterface;
@@ -46,12 +47,13 @@ class AssertionResolver
         PageProviderInterface $pageProvider,
         IdentifierCollectionInterface $identifierCollection
     ): AssertionInterface {
-        $examinedValue = $assertion->getExaminedValue()->getExaminedValue();
+        if ($assertion instanceof ExaminationAssertionInterface) {
+            $examinedValue = $assertion->getExaminedValue()->getExaminedValue();
+            $resolvedValue = $this->valueResolver->resolve($examinedValue, $pageProvider, $identifierCollection);
+            $assertion = $assertion->withExaminedValue(new AssertionExaminedValue($resolvedValue));
+        }
 
-        $resolvedValue = $this->valueResolver->resolve($examinedValue, $pageProvider, $identifierCollection);
-        $assertion = $assertion->withExaminedValue(new AssertionExaminedValue($resolvedValue));
-
-        if ($assertion instanceof ValueComparisonAssertionInterface) {
+        if ($assertion instanceof ComparisonAssertionInterface) {
             $expectedValue = $assertion->getExpectedValue()->getExpectedValue();
             $resolvedValue = $this->valueResolver->resolve($expectedValue, $pageProvider, $identifierCollection);
 
