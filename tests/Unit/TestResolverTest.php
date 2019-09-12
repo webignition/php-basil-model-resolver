@@ -26,8 +26,9 @@ use webignition\BasilModel\Test\Test;
 use webignition\BasilModel\Test\TestInterface;
 use webignition\BasilModel\Value\AssertionExaminedValue;
 use webignition\BasilModel\Value\AssertionExpectedValue;
-use webignition\BasilModel\Value\CssSelector;
 use webignition\BasilModel\Value\DataParameter;
+use webignition\BasilModel\Value\ElementExpression;
+use webignition\BasilModel\Value\ElementExpressionType;
 use webignition\BasilModel\Value\ElementValue;
 use webignition\BasilModel\Value\PageElementReference;
 use webignition\BasilModelFactory\Action\ActionFactory;
@@ -84,21 +85,21 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
         $assertionFactory = AssertionFactory::createFactory();
 
         $actionSelectorIdentifier = new ElementIdentifier(
-            new CssSelector('.action-selector')
+            new ElementExpression('.action-selector', ElementExpressionType::CSS_SELECTOR)
         );
 
         $assertionSelectorIdentifier = new ElementIdentifier(
-            new CssSelector('.assertion-selector')
+            new ElementExpression('.assertion-selector', ElementExpressionType::CSS_SELECTOR)
         );
 
         $namedActionSelectorIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new CssSelector('.action-selector'),
+            new ElementExpression('.action-selector', ElementExpressionType::CSS_SELECTOR),
             1,
             'action_selector'
         );
 
         $namedAssertionSelectorIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new CssSelector('.assertion-selector'),
+            new ElementExpression('.assertion-selector', ElementExpressionType::CSS_SELECTOR),
             1,
             'assertion_selector'
         );
@@ -474,12 +475,12 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         new Uri('https://example.com'),
                         new IdentifierCollection([
                             TestIdentifierFactory::createElementIdentifier(
-                                new CssSelector('.action-selector'),
+                                new ElementExpression('.action-selector', ElementExpressionType::CSS_SELECTOR),
                                 1,
                                 'action_selector'
                             ),
                             TestIdentifierFactory::createElementIdentifier(
-                                new CssSelector('.assertion-selector'),
+                                new ElementExpression('.assertion-selector', ElementExpressionType::CSS_SELECTOR),
                                 1,
                                 'assertion_selector'
                             ),
@@ -551,12 +552,12 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         new Uri('https://example.com'),
                         new IdentifierCollection([
                             TestIdentifierFactory::createElementIdentifier(
-                                new CssSelector('.action-selector'),
+                                new ElementExpression('.action-selector', ElementExpressionType::CSS_SELECTOR),
                                 1,
                                 'action_selector'
                             ),
                             TestIdentifierFactory::createElementIdentifier(
-                                new CssSelector('.assertion-selector'),
+                                new ElementExpression('.assertion-selector', ElementExpressionType::CSS_SELECTOR),
                                 1,
                                 'assertion_selector'
                             ),

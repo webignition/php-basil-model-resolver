@@ -15,7 +15,8 @@ use webignition\BasilModel\Identifier\IdentifierCollection;
 use webignition\BasilModel\Identifier\IdentifierCollectionInterface;
 use webignition\BasilModel\Page\Page;
 use webignition\BasilModel\Value\AttributeValue;
-use webignition\BasilModel\Value\CssSelector;
+use webignition\BasilModel\Value\ElementExpression;
+use webignition\BasilModel\Value\ElementExpressionType;
 use webignition\BasilModel\Value\ElementValue;
 use webignition\BasilModel\Value\LiteralValue;
 use webignition\BasilModelFactory\Action\ActionFactory;
@@ -108,7 +109,7 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
     {
         $actionFactory = ActionFactory::createFactory();
         $namedCssElementIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new CssSelector('.selector'),
+            new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR),
             1,
             'element_name'
         );
@@ -150,7 +151,7 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
                 'expectedAction' => new InputAction(
                     'set ".selector" to page_import_name.elements.element_name',
                     new ElementIdentifier(
-                        new CssSelector('.selector')
+                        new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR)
                     ),
                     new ElementValue($namedCssElementIdentifier),
                     '".selector" to page_import_name.elements.element_name'
@@ -183,7 +184,7 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
     {
         $actionFactory = ActionFactory::createFactory();
         $namedCssElementIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new CssSelector('.selector'),
+            new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR),
             1,
             'element_name'
         );
@@ -211,7 +212,7 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
                 'expectedAction' => new InputAction(
                     'set ".selector" to $elements.element_name',
                     new ElementIdentifier(
-                        new CssSelector('.selector')
+                        new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR)
                     ),
                     new ElementValue($namedCssElementIdentifier),
                     '".selector" to $elements.element_name'
@@ -237,7 +238,7 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
     {
         $actionFactory = ActionFactory::createFactory();
         $namedCssElementIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new CssSelector('.selector'),
+            new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR),
             1,
             'element_name'
         );
@@ -254,7 +255,7 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
                 'expectedAction' => new InputAction(
                     'set ".selector" to $elements.element_name.attribute_name',
                     new ElementIdentifier(
-                        new CssSelector('.selector')
+                        new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR)
                     ),
                     new AttributeValue(
                         new AttributeIdentifier(

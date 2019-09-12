@@ -8,7 +8,8 @@ use Nyholm\Psr7\Uri;
 use webignition\BasilModel\Identifier\IdentifierCollection;
 use webignition\BasilModel\Identifier\IdentifierInterface;
 use webignition\BasilModel\Page\Page;
-use webignition\BasilModel\Value\CssSelector;
+use webignition\BasilModel\Value\ElementExpression;
+use webignition\BasilModel\Value\ElementExpressionType;
 use webignition\BasilModel\Value\PageElementReference;
 use webignition\BasilModelProvider\Page\PageProvider;
 use webignition\BasilModelProvider\Page\PageProviderInterface;
@@ -45,7 +46,9 @@ class PageElementReferenceResolverTest extends \PHPUnit\Framework\TestCase
 
     public function resolveIsResolvedDataProvider(): array
     {
-        $cssElementIdentifier = TestIdentifierFactory::createElementIdentifier(new CssSelector('.selector'));
+        $cssElementIdentifier = TestIdentifierFactory::createElementIdentifier(
+            new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR)
+        );
         $cssElementIdentifierWithName = $cssElementIdentifier->withName('element_name');
 
         return [

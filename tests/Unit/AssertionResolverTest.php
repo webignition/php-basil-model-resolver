@@ -16,7 +16,8 @@ use webignition\BasilModel\Page\Page;
 use webignition\BasilModel\Value\AssertionExaminedValue;
 use webignition\BasilModel\Value\AssertionExpectedValue;
 use webignition\BasilModel\Value\AttributeValue;
-use webignition\BasilModel\Value\CssSelector;
+use webignition\BasilModel\Value\ElementExpression;
+use webignition\BasilModel\Value\ElementExpressionType;
 use webignition\BasilModel\Value\ElementValue;
 use webignition\BasilModelFactory\AssertionFactory;
 use webignition\BasilModelProvider\Page\EmptyPageProvider;
@@ -63,27 +64,27 @@ class AssertionResolverTest extends \PHPUnit\Framework\TestCase
         $assertionFactory = AssertionFactory::createFactory();
 
         $cssIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new CssSelector('.selector')
+            new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR)
         );
 
         $namedCssIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new CssSelector('.selector'),
+            new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR),
             null,
             'element_name'
         );
 
         $namedExpectedCssIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new CssSelector('.expected-selector'),
+            new ElementExpression('.expected-selector', ElementExpressionType::CSS_SELECTOR),
             1,
             'expected'
         );
 
         $examinedCssIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new CssSelector('.examined-selector')
+            new ElementExpression('.examined-selector', ElementExpressionType::CSS_SELECTOR)
         );
 
         $namedExaminedCssIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new CssSelector('.examined-selector'),
+            new ElementExpression('.examined-selector', ElementExpressionType::CSS_SELECTOR),
             1,
             'examined'
         );
