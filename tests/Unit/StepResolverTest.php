@@ -11,8 +11,8 @@ use webignition\BasilContextAwareException\ExceptionContext\ExceptionContextInte
 use webignition\BasilModel\Action\ActionTypes;
 use webignition\BasilModel\Action\InputAction;
 use webignition\BasilModel\Action\InteractionAction;
-use webignition\BasilModel\Assertion\Assertion;
-use webignition\BasilModel\Assertion\AssertionComparisons;
+use webignition\BasilModel\Assertion\ExistsAssertion;
+use webignition\BasilModel\Assertion\IsAssertion;
 use webignition\BasilModel\Identifier\AttributeIdentifier;
 use webignition\BasilModel\Identifier\IdentifierCollection;
 use webignition\BasilModel\Identifier\ReferenceIdentifier;
@@ -20,6 +20,8 @@ use webignition\BasilModel\Page\Page;
 use webignition\BasilModel\Step\PendingImportResolutionStep;
 use webignition\BasilModel\Step\Step;
 use webignition\BasilModel\Step\StepInterface;
+use webignition\BasilModel\Value\AssertionExaminedValue;
+use webignition\BasilModel\Value\AssertionExpectedValue;
 use webignition\BasilModel\Value\AttributeValue;
 use webignition\BasilModel\Value\CssSelector;
 use webignition\BasilModel\Value\ElementReference;
@@ -146,28 +148,26 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
         ];
 
         $resolvedAssertions = [
-            new Assertion(
+            new ExistsAssertion(
                 'page_import_name.elements.element_name exists',
-                new ElementValue($namedCssElementIdentifier),
-                AssertionComparisons::EXISTS
+                new AssertionExaminedValue(
+                    new ElementValue($namedCssElementIdentifier)
+                )
             ),
-            new Assertion(
+            new IsAssertion(
                 'page_import_name.elements.element_name is page_import_name.elements.element_name',
-                new ElementValue($namedCssElementIdentifier),
-                AssertionComparisons::IS,
-                new ElementValue($namedCssElementIdentifier)
+                new AssertionExaminedValue(new ElementValue($namedCssElementIdentifier)),
+                new AssertionExpectedValue(new ElementValue($namedCssElementIdentifier))
             ),
-            new Assertion(
+            new ExistsAssertion(
                 '$elements.element_name exists',
-                new ElementValue($namedCssElementIdentifier),
-                AssertionComparisons::EXISTS
+                new AssertionExaminedValue(new ElementValue($namedCssElementIdentifier))
             ),
-            new Assertion(
+            new ExistsAssertion(
                 '$elements.element_name.attribute_name exists',
-                new AttributeValue(
+                new AssertionExaminedValue(new AttributeValue(
                     new AttributeIdentifier($namedCssElementIdentifier, 'attribute_name')
-                ),
-                AssertionComparisons::EXISTS
+                ))
             ),
         ];
 
@@ -340,10 +340,9 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
                     )
                 ]),
                 'expectedStep' => new Step([], [
-                    new Assertion(
+                    new ExistsAssertion(
                         'page_import_name.elements.examined exists',
-                        new ElementValue($namedExaminedIdentifier),
-                        AssertionComparisons::EXISTS
+                        new AssertionExaminedValue(new ElementValue($namedExaminedIdentifier))
                     ),
                 ]),
             ],
@@ -362,11 +361,10 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
                     )
                 ]),
                 'expectedStep' => new Step([], [
-                    new Assertion(
+                    new IsAssertion(
                         '".examined-selector" is page_import_name.elements.expected',
-                        new ElementValue($examinedIdentifier),
-                        AssertionComparisons::IS,
-                        new ElementValue($namedExpectedIdentifier)
+                        new AssertionExaminedValue(new ElementValue($examinedIdentifier)),
+                        new AssertionExpectedValue(new ElementValue($namedExpectedIdentifier))
                     ),
                 ]),
             ],
@@ -439,10 +437,9 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
                 ])),
                 'pageProvider' => new EmptyPageProvider(),
                 'expectedStep' => (new Step([], [
-                    new Assertion(
+                    new ExistsAssertion(
                         '$elements.examined exists',
-                        new ElementValue($namedExaminedIdentifier),
-                        AssertionComparisons::EXISTS
+                        new AssertionExaminedValue(new ElementValue($namedExaminedIdentifier))
                     ),
                 ]))->withIdentifierCollection(new IdentifierCollection([
                     $namedExaminedIdentifier,
@@ -456,11 +453,10 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
                 ])),
                 'pageProvider' => new EmptyPageProvider(),
                 'expectedStep' => (new Step([], [
-                    new Assertion(
+                    new IsAssertion(
                         '".examined-selector" is $elements.expected',
-                        new ElementValue($examinedIdentifier),
-                        AssertionComparisons::IS,
-                        new ElementValue($namedExpectedIdentifier)
+                        new AssertionExaminedValue(new ElementValue($examinedIdentifier)),
+                        new AssertionExpectedValue(new ElementValue($namedExpectedIdentifier))
                     ),
                 ]))->withIdentifierCollection(new IdentifierCollection([
                     $namedExpectedIdentifier,
@@ -474,15 +470,16 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
                 ])),
                 'pageProvider' => new EmptyPageProvider(),
                 'expectedStep' => (new Step([], [
-                    new Assertion(
+                    new ExistsAssertion(
                         '$elements.examined.attribute_name exists',
-                        new AttributeValue(
-                            new AttributeIdentifier(
-                                $namedExaminedIdentifier,
-                                'attribute_name'
+                        new AssertionExaminedValue(
+                            new AttributeValue(
+                                new AttributeIdentifier(
+                                    $namedExaminedIdentifier,
+                                    'attribute_name'
+                                )
                             )
-                        ),
-                        AssertionComparisons::EXISTS
+                        )
                     ),
                 ]))->withIdentifierCollection(new IdentifierCollection([
                     $namedExaminedIdentifier,
@@ -498,14 +495,15 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
                 ])),
                 'pageProvider' => new EmptyPageProvider(),
                 'expectedStep' => (new Step([], [
-                    new Assertion(
+                    new IsAssertion(
                         '".examined-selector" is $elements.expected.attribute_name',
-                        new ElementValue($examinedIdentifier),
-                        AssertionComparisons::IS,
-                        new AttributeValue(
-                            new AttributeIdentifier(
-                                $namedExpectedIdentifier,
-                                'attribute_name'
+                        new AssertionExaminedValue(new ElementValue($examinedIdentifier)),
+                        new AssertionExpectedValue(
+                            new AttributeValue(
+                                new AttributeIdentifier(
+                                    $namedExpectedIdentifier,
+                                    'attribute_name'
+                                )
                             )
                         )
                     ),
@@ -574,12 +572,13 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
         ];
 
         $resolvedAssertions = [
-            new Assertion(
+            new ExistsAssertion(
                 'page_import_name.elements.element_name exists',
-                new ElementValue(
-                    $resolvedElementIdentifier
-                ),
-                AssertionComparisons::EXISTS
+                new AssertionExaminedValue(
+                    new ElementValue(
+                        $resolvedElementIdentifier
+                    )
+                )
             ),
         ];
 
@@ -677,14 +676,15 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
             ],
             'UnknownPageElementException: assertion has page element reference, referenced page lacks element' => [
                 'step' => new Step([], [
-                    new Assertion(
+                    new ExistsAssertion(
                         'page_import_name.elements.element_name exists',
-                        new PageElementReference(
-                            'page_import_name.elements.element_name',
-                            'page_import_name',
-                            'element_name'
-                        ),
-                        AssertionComparisons::EXISTS
+                        new AssertionExaminedValue(
+                            new PageElementReference(
+                                'page_import_name.elements.element_name',
+                                'page_import_name',
+                                'element_name'
+                            )
+                        )
                     )
                 ]),
                 'pageProvider' => new PageProvider([
@@ -723,14 +723,15 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
             ],
             'UnknownPageException: assertion has page element reference, page does not exist' => [
                 'step' => new Step([], [
-                    new Assertion(
+                    new ExistsAssertion(
                         'page_import_name.elements.element_name exists',
-                        new PageElementReference(
-                            'page_import_name.elements.element_name',
-                            'page_import_name',
-                            'element_name'
-                        ),
-                        AssertionComparisons::EXISTS
+                        new AssertionExaminedValue(
+                            new PageElementReference(
+                                'page_import_name.elements.element_name',
+                                'page_import_name',
+                                'element_name'
+                            )
+                        )
                     )
                 ]),
                 'pageProvider' => new EmptyPageProvider(),
@@ -760,10 +761,11 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
             ],
             'UnknownElementException: assertion has page element reference, referenced page invalid' => [
                 'step' => new Step([], [
-                    new Assertion(
+                    new ExistsAssertion(
                         '$elements.element_name exists',
-                        new ElementReference('$elements.element_name', 'element_name'),
-                        AssertionComparisons::EXISTS
+                        new AssertionExaminedValue(
+                            new ElementReference('$elements.element_name', 'element_name')
+                        )
                     )
                 ]),
                 'pageProvider' => new EmptyPageProvider(),

@@ -5,19 +5,18 @@
 namespace webignition\BasilModelResolver\Tests\Unit;
 
 use Nyholm\Psr7\Uri;
-use webignition\BasilModel\Assertion\Assertion;
-use webignition\BasilModel\Assertion\AssertionComparisons;
 use webignition\BasilModel\Assertion\AssertionInterface;
+use webignition\BasilModel\Assertion\ExistsAssertion;
+use webignition\BasilModel\Assertion\IsAssertion;
 use webignition\BasilModel\Identifier\AttributeIdentifier;
-use webignition\BasilModel\Identifier\ElementIdentifier;
 use webignition\BasilModel\Identifier\IdentifierCollection;
 use webignition\BasilModel\Identifier\IdentifierCollectionInterface;
 use webignition\BasilModel\Page\Page;
+use webignition\BasilModel\Value\AssertionExaminedValue;
+use webignition\BasilModel\Value\AssertionExpectedValue;
 use webignition\BasilModel\Value\AttributeValue;
 use webignition\BasilModel\Value\CssSelector;
 use webignition\BasilModel\Value\ElementValue;
-use webignition\BasilModel\Value\LiteralValue;
-use webignition\BasilModel\Value\PageProperty;
 use webignition\BasilModelFactory\AssertionFactory;
 use webignition\BasilModelProvider\Page\EmptyPageProvider;
 use webignition\BasilModelProvider\Page\PageProvider;
@@ -37,57 +36,6 @@ class AssertionResolverTest extends \PHPUnit\Framework\TestCase
         parent::setUp();
 
         $this->resolver = AssertionResolver::createResolver();
-    }
-
-    /**
-     * @dataProvider resolveLeavesAssertionUnchangedDataProvider
-     */
-    public function testResolveLeavesAssertionUnchanged(AssertionInterface $assertion)
-    {
-        $this->assertEquals(
-            $assertion,
-            $this->resolver->resolve($assertion, new EmptyPageProvider(), new IdentifierCollection())
-        );
-    }
-
-    public function resolveLeavesAssertionUnchangedDataProvider(): array
-    {
-        return [
-            'examined value missing' => [
-                'assertion' => new Assertion(
-                    '',
-                    null,
-                    ''
-                ),
-            ],
-            'examined value is not object value' => [
-                'assertion' => new Assertion(
-                    '',
-                    new LiteralValue('literal string'),
-                    ''
-                ),
-            ],
-            'examined value is not page element reference' => [
-                'assertion' => new Assertion(
-                    '$page.url is "value"',
-                    new PageProperty('$page.url', 'url'),
-                    AssertionComparisons::IS,
-                    new LiteralValue('value')
-                ),
-            ],
-            'examined value is not an element parameter' => [
-                'assertion' => new Assertion(
-                    '".selector" is "value"',
-                    new ElementValue(
-                        new ElementIdentifier(
-                            new CssSelector('.selector')
-                        )
-                    ),
-                    AssertionComparisons::IS,
-                    new LiteralValue('value')
-                ),
-            ],
-        ];
     }
 
     /**
@@ -153,10 +101,9 @@ class AssertionResolverTest extends \PHPUnit\Framework\TestCase
                     )
                 ]),
                 'identifierCollection' => new IdentifierCollection(),
-                'expectedAssertion' => new Assertion(
+                'expectedAssertion' => new ExistsAssertion(
                     'page_import_name.elements.element_name exists',
-                    new ElementValue($namedCssIdentifier),
-                    AssertionComparisons::EXISTS
+                    new AssertionExaminedValue(new ElementValue($namedCssIdentifier))
                 ),
             ],
             'expected value is page element reference' => [
@@ -172,11 +119,10 @@ class AssertionResolverTest extends \PHPUnit\Framework\TestCase
                     )
                 ]),
                 'identifierCollection' => new IdentifierCollection(),
-                'expectedAssertion' => new Assertion(
+                'expectedAssertion' => new IsAssertion(
                     '".examined-selector" is page_import_name.elements.expected',
-                    new ElementValue($examinedCssIdentifier),
-                    AssertionComparisons::IS,
-                    new ElementValue($namedExpectedCssIdentifier)
+                    new AssertionExaminedValue(new ElementValue($examinedCssIdentifier)),
+                    new AssertionExpectedValue(new ElementValue($namedExpectedCssIdentifier))
                 ),
             ],
             'expected and examined values are page element reference' => [
@@ -193,11 +139,10 @@ class AssertionResolverTest extends \PHPUnit\Framework\TestCase
                     )
                 ]),
                 'identifierCollection' => new IdentifierCollection(),
-                'expectedAssertion' => new Assertion(
+                'expectedAssertion' => new IsAssertion(
                     'page_import_name.elements.examined is page_import_name.elements.expected',
-                    new ElementValue($namedExaminedCssIdentifier),
-                    AssertionComparisons::IS,
-                    new ElementValue($namedExpectedCssIdentifier)
+                    new AssertionExaminedValue(new ElementValue($namedExaminedCssIdentifier)),
+                    new AssertionExpectedValue(new ElementValue($namedExpectedCssIdentifier))
                 ),
             ],
             'examined value is element parameter' => [
@@ -206,10 +151,9 @@ class AssertionResolverTest extends \PHPUnit\Framework\TestCase
                 'identifierCollection' => new IdentifierCollection([
                     $namedExaminedCssIdentifier,
                 ]),
-                'expectedAssertion' => new Assertion(
+                'expectedAssertion' => new ExistsAssertion(
                     '$elements.examined exists',
-                    new ElementValue($namedExaminedCssIdentifier),
-                    AssertionComparisons::EXISTS
+                    new AssertionExaminedValue(new ElementValue($namedExaminedCssIdentifier))
                 ),
             ],
             'expected value is element parameter' => [
@@ -220,11 +164,10 @@ class AssertionResolverTest extends \PHPUnit\Framework\TestCase
                 'identifierCollection' => new IdentifierCollection([
                     $namedExpectedCssIdentifier
                 ]),
-                'expectedAssertion' => new Assertion(
+                'expectedAssertion' => new IsAssertion(
                     '".selector" is $elements.expected',
-                    new ElementValue($cssIdentifier),
-                    AssertionComparisons::IS,
-                    new ElementValue($namedExpectedCssIdentifier)
+                    new AssertionExaminedValue(new ElementValue($cssIdentifier)),
+                    new AssertionExpectedValue(new ElementValue($namedExpectedCssIdentifier))
                 ),
             ],
             'expected and examined values are element references' => [
@@ -236,11 +179,10 @@ class AssertionResolverTest extends \PHPUnit\Framework\TestCase
                     $namedExpectedCssIdentifier,
                     $namedExaminedCssIdentifier,
                 ]),
-                'expectedAssertion' => new Assertion(
+                'expectedAssertion' => new IsAssertion(
                     '$elements.examined is $elements.expected',
-                    new ElementValue($namedExaminedCssIdentifier),
-                    AssertionComparisons::IS,
-                    new ElementValue($namedExpectedCssIdentifier)
+                    new AssertionExaminedValue(new ElementValue($namedExaminedCssIdentifier)),
+                    new AssertionExpectedValue(new ElementValue($namedExpectedCssIdentifier))
                 ),
             ],
             'expected value is attribute parameter' => [
@@ -251,15 +193,14 @@ class AssertionResolverTest extends \PHPUnit\Framework\TestCase
                 'identifierCollection' => new IdentifierCollection([
                     $namedExaminedCssIdentifier,
                 ]),
-                'expectedAssertion' => new Assertion(
+                'expectedAssertion' => new ExistsAssertion(
                     '$elements.examined.attribute_name exists',
-                    new AttributeValue(
+                    new AssertionExaminedValue(new AttributeValue(
                         new AttributeIdentifier(
                             $namedExaminedCssIdentifier,
                             'attribute_name'
                         )
-                    ),
-                    AssertionComparisons::EXISTS
+                    ))
                 ),
             ],
             'examined value is attribute parameter' => [
@@ -270,16 +211,19 @@ class AssertionResolverTest extends \PHPUnit\Framework\TestCase
                 'identifierCollection' => new IdentifierCollection([
                     $namedExpectedCssIdentifier,
                 ]),
-                'expectedAssertion' => new Assertion(
+                'expectedAssertion' => new IsAssertion(
                     '".selector" is $elements.expected.attribute_name',
-                    new ElementValue(
-                        $cssIdentifier
+                    new AssertionExaminedValue(
+                        new ElementValue(
+                            $cssIdentifier
+                        )
                     ),
-                    AssertionComparisons::IS,
-                    new AttributeValue(
-                        new AttributeIdentifier(
-                            $namedExpectedCssIdentifier,
-                            'attribute_name'
+                    new AssertionExpectedValue(
+                        new AttributeValue(
+                            new AttributeIdentifier(
+                                $namedExpectedCssIdentifier,
+                                'attribute_name'
+                            )
                         )
                     )
                 ),
@@ -293,19 +237,22 @@ class AssertionResolverTest extends \PHPUnit\Framework\TestCase
                     $namedExaminedCssIdentifier,
                     $namedExpectedCssIdentifier,
                 ]),
-                'expectedAssertion' => new Assertion(
+                'expectedAssertion' => new IsAssertion(
                     '$elements.examined.attribute_name is $elements.expected.attribute_name',
-                    new AttributeValue(
-                        new AttributeIdentifier(
-                            $namedExaminedCssIdentifier,
-                            'attribute_name'
+                    new AssertionExaminedValue(
+                        new AttributeValue(
+                            new AttributeIdentifier(
+                                $namedExaminedCssIdentifier,
+                                'attribute_name'
+                            )
                         )
                     ),
-                    AssertionComparisons::IS,
-                    new AttributeValue(
-                        new AttributeIdentifier(
-                            $namedExpectedCssIdentifier,
-                            'attribute_name'
+                    new AssertionExpectedValue(
+                        new AttributeValue(
+                            new AttributeIdentifier(
+                                $namedExpectedCssIdentifier,
+                                'attribute_name'
+                            )
                         )
                     )
                 ),

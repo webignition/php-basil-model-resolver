@@ -11,8 +11,8 @@ use webignition\BasilContextAwareException\ExceptionContext\ExceptionContextInte
 use webignition\BasilModel\Action\ActionTypes;
 use webignition\BasilModel\Action\InputAction;
 use webignition\BasilModel\Action\InteractionAction;
-use webignition\BasilModel\Assertion\Assertion;
-use webignition\BasilModel\Assertion\AssertionComparisons;
+use webignition\BasilModel\Assertion\ExistsAssertion;
+use webignition\BasilModel\Assertion\IsAssertion;
 use webignition\BasilModel\DataSet\DataSet;
 use webignition\BasilModel\DataSet\DataSetCollection;
 use webignition\BasilModel\Identifier\ElementIdentifier;
@@ -23,6 +23,8 @@ use webignition\BasilModel\Step\Step;
 use webignition\BasilModel\Test\Configuration;
 use webignition\BasilModel\Test\Test;
 use webignition\BasilModel\Test\TestInterface;
+use webignition\BasilModel\Value\AssertionExaminedValue;
+use webignition\BasilModel\Value\AssertionExpectedValue;
 use webignition\BasilModel\Value\CssSelector;
 use webignition\BasilModel\Value\DataParameter;
 use webignition\BasilModel\Value\ElementValue;
@@ -118,6 +120,35 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
             'assertion_selector'
         );
 
+        $expectedResolvedDataTest = new Test('test name', new Configuration('', ''), [
+            'step name' => (new Step(
+                [
+                    new InputAction(
+                        'set ".action-selector" to $data.key1',
+                        $actionSelectorIdentifier,
+                        new DataParameter('$data.key1', 'key1'),
+                        '".action-selector" to $data.key1'
+                    )
+                ],
+                [
+                    new IsAssertion(
+                        '".assertion-selector" is $data.key2',
+                        new AssertionExaminedValue(new ElementValue($assertionSelectorIdentifier)),
+                        new AssertionExpectedValue(new DataParameter('$data.key2', 'key2'))
+                    )
+                ]
+            ))->withDataSetCollection(new DataSetCollection([
+                new DataSet('0', [
+                    'key1' => 'key1value1',
+                    'key2' => 'key2value1',
+                ]),
+                new DataSet('1', [
+                    'key1' => 'key1value2',
+                    'key2' => 'key2value2',
+                ]),
+            ])),
+        ]);
+
         return [
             'empty test' => [
                 'test' => new Test('test name', new Configuration('', ''), []),
@@ -183,10 +214,11 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                             )
                         ],
                         [
-                            new Assertion(
+                            new ExistsAssertion(
                                 '".assertion-selector" exists',
-                                new ElementValue($assertionSelectorIdentifier),
-                                AssertionComparisons::EXISTS
+                                new AssertionExaminedValue(
+                                    new ElementValue($assertionSelectorIdentifier)
+                                )
                             )
                         ]
                     ),
@@ -233,10 +265,11 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                             )
                         ],
                         [
-                            new Assertion(
+                            new ExistsAssertion(
                                 'page_import_name.elements.assertion_selector exists',
-                                new ElementValue($namedAssertionSelectorIdentifier),
-                                AssertionComparisons::EXISTS
+                                new AssertionExaminedValue(
+                                    new ElementValue($namedAssertionSelectorIdentifier)
+                                )
                             )
                         ]
                     ),
@@ -277,10 +310,11 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                             )
                         ],
                         [
-                            new Assertion(
+                            new ExistsAssertion(
                                 '".assertion-selector" exists',
-                                new ElementValue($assertionSelectorIdentifier),
-                                AssertionComparisons::EXISTS
+                                new AssertionExaminedValue(
+                                    new ElementValue($assertionSelectorIdentifier)
+                                )
                             )
                         ]
                     ),
@@ -332,10 +366,11 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                             )
                         ],
                         [
-                            new Assertion(
+                            new ExistsAssertion(
                                 '$elements.assertion_selector exists',
-                                new ElementValue($namedAssertionSelectorIdentifier),
-                                AssertionComparisons::EXISTS
+                                new AssertionExaminedValue(
+                                    new ElementValue($namedAssertionSelectorIdentifier)
+                                )
                             )
                         ]
                     ),
@@ -374,35 +409,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                     )
                 ]),
                 'dataSetProvider' => new EmptyDataSetProvider(),
-                'expectedTest' => new Test('test name', new Configuration('', ''), [
-                    'step name' => (new Step(
-                        [
-                            new InputAction(
-                                'set ".action-selector" to $data.key1',
-                                $actionSelectorIdentifier,
-                                new DataParameter('$data.key1', 'key1'),
-                                '".action-selector" to $data.key1'
-                            )
-                        ],
-                        [
-                            new Assertion(
-                                '".assertion-selector" is $data.key2',
-                                new ElementValue($assertionSelectorIdentifier),
-                                AssertionComparisons::IS,
-                                new DataParameter('$data.key2', 'key2')
-                            )
-                        ]
-                    ))->withDataSetCollection(new DataSetCollection([
-                        new DataSet('0', [
-                            'key1' => 'key1value1',
-                            'key2' => 'key2value1',
-                        ]),
-                        new DataSet('1', [
-                            'key1' => 'key1value2',
-                            'key2' => 'key2value2',
-                        ]),
-                    ])),
-                ]),
+                'expectedTest' => $expectedResolvedDataTest,
             ],
             'empty step imports step, imported actions and assertions use imported data' => [
                 'test' => new Test(
@@ -439,35 +446,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         ]),
                     ]),
                 ]),
-                'expectedTest' => new Test('test name', new Configuration('', ''), [
-                    'step name' => (new Step(
-                        [
-                            new InputAction(
-                                'set ".action-selector" to $data.key1',
-                                $actionSelectorIdentifier,
-                                new DataParameter('$data.key1', 'key1'),
-                                '".action-selector" to $data.key1'
-                            )
-                        ],
-                        [
-                            new Assertion(
-                                '".assertion-selector" is $data.key2',
-                                new ElementValue($assertionSelectorIdentifier),
-                                AssertionComparisons::IS,
-                                new DataParameter('$data.key2', 'key2')
-                            )
-                        ]
-                    ))->withDataSetCollection(new DataSetCollection([
-                        new DataSet('0', [
-                            'key1' => 'key1value1',
-                            'key2' => 'key2value1',
-                        ]),
-                        new DataSet('1', [
-                            'key1' => 'key1value2',
-                            'key2' => 'key2value2',
-                        ]),
-                    ])),
-                ]),
+                'expectedTest' => $expectedResolvedDataTest,
             ],
             'deferred step import, imported actions and assertions require element resolution' => [
                 'test' => new Test(
@@ -517,10 +496,9 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                             ),
                         ],
                         [
-                            new Assertion(
+                            new ExistsAssertion(
                                 '$elements.assertion_selector exists',
-                                new ElementValue($namedAssertionSelectorIdentifier),
-                                AssertionComparisons::EXISTS
+                                new AssertionExaminedValue(new ElementValue($namedAssertionSelectorIdentifier))
                             ),
                         ]
                     ),
@@ -537,10 +515,9 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                             ),
                         ],
                         [
-                            new Assertion(
+                            new ExistsAssertion(
                                 '$elements.assertion_selector exists',
-                                new ElementValue($namedAssertionSelectorIdentifier),
-                                AssertionComparisons::EXISTS
+                                new AssertionExaminedValue(new ElementValue($namedAssertionSelectorIdentifier))
                             ),
                         ]
                     ),
@@ -594,11 +571,10 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                             )
                         ],
                         [
-                            new Assertion(
+                            new IsAssertion(
                                 '$elements.assertion_selector is $data.key2',
-                                new ElementValue($namedAssertionSelectorIdentifier),
-                                AssertionComparisons::IS,
-                                new DataParameter('$data.key2', 'key2')
+                                new AssertionExaminedValue(new ElementValue($namedAssertionSelectorIdentifier)),
+                                new AssertionExpectedValue(new DataParameter('$data.key2', 'key2'))
                             )
                         ]
                     ),
@@ -626,11 +602,10 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                             )
                         ],
                         [
-                            new Assertion(
+                            new IsAssertion(
                                 '$elements.assertion_selector is $data.key2',
-                                new ElementValue($namedAssertionSelectorIdentifier),
-                                AssertionComparisons::IS,
-                                new DataParameter('$data.key2', 'key2')
+                                new AssertionExaminedValue(new ElementValue($namedAssertionSelectorIdentifier)),
+                                new AssertionExpectedValue(new DataParameter('$data.key2', 'key2'))
                             )
                         ]
                     ))->withDataSetCollection(new DataSetCollection([
