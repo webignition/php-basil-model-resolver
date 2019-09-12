@@ -11,8 +11,9 @@ use webignition\BasilContextAwareException\ExceptionContext\ExceptionContextInte
 use webignition\BasilModel\Action\ActionTypes;
 use webignition\BasilModel\Action\InputAction;
 use webignition\BasilModel\Action\InteractionAction;
-use webignition\BasilModel\Assertion\ExistsAssertion;
-use webignition\BasilModel\Assertion\IsAssertion;
+use webignition\BasilModel\Assertion\AssertionComparison;
+use webignition\BasilModel\Assertion\ComparisonAssertion;
+use webignition\BasilModel\Assertion\ExaminationAssertion;
 use webignition\BasilModel\DataSet\DataSet;
 use webignition\BasilModel\DataSet\DataSetCollection;
 use webignition\BasilModel\Identifier\ElementIdentifier;
@@ -131,9 +132,10 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                     )
                 ],
                 [
-                    new IsAssertion(
+                    new ComparisonAssertion(
                         '".assertion-selector" is $data.key2',
                         new AssertionExaminedValue(new ElementValue($assertionSelectorIdentifier)),
+                        AssertionComparison::IS,
                         new AssertionExpectedValue(new DataParameter('$data.key2', 'key2'))
                     )
                 ]
@@ -214,11 +216,12 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                             )
                         ],
                         [
-                            new ExistsAssertion(
+                            new ExaminationAssertion(
                                 '".assertion-selector" exists',
                                 new AssertionExaminedValue(
                                     new ElementValue($assertionSelectorIdentifier)
-                                )
+                                ),
+                                AssertionComparison::EXISTS
                             )
                         ]
                     ),
@@ -265,11 +268,12 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                             )
                         ],
                         [
-                            new ExistsAssertion(
+                            new ExaminationAssertion(
                                 'page_import_name.elements.assertion_selector exists',
                                 new AssertionExaminedValue(
                                     new ElementValue($namedAssertionSelectorIdentifier)
-                                )
+                                ),
+                                AssertionComparison::EXISTS
                             )
                         ]
                     ),
@@ -310,11 +314,12 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                             )
                         ],
                         [
-                            new ExistsAssertion(
+                            new ExaminationAssertion(
                                 '".assertion-selector" exists',
                                 new AssertionExaminedValue(
                                     new ElementValue($assertionSelectorIdentifier)
-                                )
+                                ),
+                                AssertionComparison::EXISTS
                             )
                         ]
                     ),
@@ -366,11 +371,12 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                             )
                         ],
                         [
-                            new ExistsAssertion(
+                            new ExaminationAssertion(
                                 '$elements.assertion_selector exists',
                                 new AssertionExaminedValue(
                                     new ElementValue($namedAssertionSelectorIdentifier)
-                                )
+                                ),
+                                AssertionComparison::EXISTS
                             )
                         ]
                     ),
@@ -496,9 +502,10 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                             ),
                         ],
                         [
-                            new ExistsAssertion(
+                            new ExaminationAssertion(
                                 '$elements.assertion_selector exists',
-                                new AssertionExaminedValue(new ElementValue($namedAssertionSelectorIdentifier))
+                                new AssertionExaminedValue(new ElementValue($namedAssertionSelectorIdentifier)),
+                                AssertionComparison::EXISTS
                             ),
                         ]
                     ),
@@ -515,9 +522,10 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                             ),
                         ],
                         [
-                            new ExistsAssertion(
+                            new ExaminationAssertion(
                                 '$elements.assertion_selector exists',
-                                new AssertionExaminedValue(new ElementValue($namedAssertionSelectorIdentifier))
+                                new AssertionExaminedValue(new ElementValue($namedAssertionSelectorIdentifier)),
+                                AssertionComparison::EXISTS
                             ),
                         ]
                     ),
@@ -571,9 +579,10 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                             )
                         ],
                         [
-                            new IsAssertion(
+                            new ComparisonAssertion(
                                 '$elements.assertion_selector is $data.key2',
                                 new AssertionExaminedValue(new ElementValue($namedAssertionSelectorIdentifier)),
+                                AssertionComparison::IS,
                                 new AssertionExpectedValue(new DataParameter('$data.key2', 'key2'))
                             )
                         ]
@@ -602,9 +611,10 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                             )
                         ],
                         [
-                            new IsAssertion(
+                            new ComparisonAssertion(
                                 '$elements.assertion_selector is $data.key2',
                                 new AssertionExaminedValue(new ElementValue($namedAssertionSelectorIdentifier)),
+                                AssertionComparison::IS,
                                 new AssertionExpectedValue(new DataParameter('$data.key2', 'key2'))
                             )
                         ]
