@@ -59,14 +59,6 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
             'wait action' => [
                 'action' => $actionFactory->createFromActionString('wait 30'),
             ],
-            'input action lacking identifier' => [
-                'action' => new InputAction(
-                    'set to "value"',
-                    null,
-                    new LiteralValue('value'),
-                    'to "value"'
-                ),
-            ],
             'input action with css selector' => [
                 'action' => $actionFactory->createFromActionString('set ".selector" to "value"'),
             ],
@@ -75,9 +67,6 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
             ],
             'input action with environment parameter value' => [
                 'action' => $actionFactory->createFromActionString('set ".selector" to $env.KEY'),
-            ],
-            'interaction action lacking identifier' => [
-                'action' => $actionFactory->createFromActionString('click'),
             ],
             'interaction action with css selector' => [
                 'action' => $actionFactory->createFromActionString('click ".selector"'),
