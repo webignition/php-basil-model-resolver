@@ -24,8 +24,8 @@ use webignition\BasilModel\Step\Step;
 use webignition\BasilModel\Test\Configuration;
 use webignition\BasilModel\Test\Test;
 use webignition\BasilModel\Test\TestInterface;
-use webignition\BasilModel\Value\AssertionExaminedValue;
-use webignition\BasilModel\Value\AssertionExpectedValue;
+use webignition\BasilModel\Value\Assertion\ExaminedValue;
+use webignition\BasilModel\Value\Assertion\ExpectedValue;
 use webignition\BasilModel\Value\DataParameter;
 use webignition\BasilModel\Value\ElementExpression;
 use webignition\BasilModel\Value\ElementExpressionType;
@@ -135,9 +135,9 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                 [
                     new ComparisonAssertion(
                         '".assertion-selector" is $data.key2',
-                        new AssertionExaminedValue(new ElementValue($assertionSelectorIdentifier)),
+                        new ExaminedValue(new ElementValue($assertionSelectorIdentifier)),
                         AssertionComparison::IS,
-                        new AssertionExpectedValue(new DataParameter('$data.key2', 'key2'))
+                        new ExpectedValue(new DataParameter('$data.key2', 'key2'))
                     )
                 ]
             ))->withDataSetCollection(new DataSetCollection([
@@ -219,7 +219,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         [
                             new ExaminationAssertion(
                                 '".assertion-selector" exists',
-                                new AssertionExaminedValue(
+                                new ExaminedValue(
                                     new ElementValue($assertionSelectorIdentifier)
                                 ),
                                 AssertionComparison::EXISTS
@@ -271,7 +271,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         [
                             new ExaminationAssertion(
                                 'page_import_name.elements.assertion_selector exists',
-                                new AssertionExaminedValue(
+                                new ExaminedValue(
                                     new ElementValue($namedAssertionSelectorIdentifier)
                                 ),
                                 AssertionComparison::EXISTS
@@ -317,7 +317,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         [
                             new ExaminationAssertion(
                                 '".assertion-selector" exists',
-                                new AssertionExaminedValue(
+                                new ExaminedValue(
                                     new ElementValue($assertionSelectorIdentifier)
                                 ),
                                 AssertionComparison::EXISTS
@@ -374,7 +374,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         [
                             new ExaminationAssertion(
                                 '$elements.assertion_selector exists',
-                                new AssertionExaminedValue(
+                                new ExaminedValue(
                                     new ElementValue($namedAssertionSelectorIdentifier)
                                 ),
                                 AssertionComparison::EXISTS
@@ -505,7 +505,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         [
                             new ExaminationAssertion(
                                 '$elements.assertion_selector exists',
-                                new AssertionExaminedValue(new ElementValue($namedAssertionSelectorIdentifier)),
+                                new ExaminedValue(new ElementValue($namedAssertionSelectorIdentifier)),
                                 AssertionComparison::EXISTS
                             ),
                         ]
@@ -525,7 +525,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         [
                             new ExaminationAssertion(
                                 '$elements.assertion_selector exists',
-                                new AssertionExaminedValue(new ElementValue($namedAssertionSelectorIdentifier)),
+                                new ExaminedValue(new ElementValue($namedAssertionSelectorIdentifier)),
                                 AssertionComparison::EXISTS
                             ),
                         ]
@@ -582,9 +582,9 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         [
                             new ComparisonAssertion(
                                 '$elements.assertion_selector is $data.key2',
-                                new AssertionExaminedValue(new ElementValue($namedAssertionSelectorIdentifier)),
+                                new ExaminedValue(new ElementValue($namedAssertionSelectorIdentifier)),
                                 AssertionComparison::IS,
-                                new AssertionExpectedValue(new DataParameter('$data.key2', 'key2'))
+                                new ExpectedValue(new DataParameter('$data.key2', 'key2'))
                             )
                         ]
                     ),
@@ -614,9 +614,9 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         [
                             new ComparisonAssertion(
                                 '$elements.assertion_selector is $data.key2',
-                                new AssertionExaminedValue(new ElementValue($namedAssertionSelectorIdentifier)),
+                                new ExaminedValue(new ElementValue($namedAssertionSelectorIdentifier)),
                                 AssertionComparison::IS,
-                                new AssertionExpectedValue(new DataParameter('$data.key2', 'key2'))
+                                new ExpectedValue(new DataParameter('$data.key2', 'key2'))
                             )
                         ]
                     ))->withDataSetCollection(new DataSetCollection([
