@@ -2,13 +2,11 @@
 
 namespace webignition\BasilModelResolver;
 
-use webignition\BasilModel\Identifier\AttributeIdentifier;
-use webignition\BasilModel\Identifier\ElementIdentifierInterface;
+use webignition\BasilModel\Identifier\DomIdentifierInterface;
 use webignition\BasilModel\Identifier\IdentifierCollectionInterface;
-use webignition\BasilModel\Value\AttributeReference;
-use webignition\BasilModel\Value\AttributeValue;
-use webignition\BasilModel\Value\ElementReference;
-use webignition\BasilModel\Value\ElementValue;
+use webignition\BasilModel\Value\DomIdentifierReferenceInterface;
+use webignition\BasilModel\Value\DomIdentifierReferenceType;
+use webignition\BasilModel\Value\DomIdentifierValue;
 use webignition\BasilModel\Value\PageElementReference;
 use webignition\BasilModel\Value\ValueInterface;
 use webignition\BasilModelProvider\Exception\UnknownPageException;
@@ -49,27 +47,29 @@ class ValueResolver
         IdentifierCollectionInterface $identifierCollection
     ): ValueInterface {
         if ($value instanceof PageElementReference) {
-            return new ElementValue(
+            return new DomIdentifierValue(
                 $this->pageElementReferenceResolver->resolve($value, $pageProvider)
             );
         }
 
-        if ($value instanceof ElementReference) {
-            return new ElementValue(
-                $this->findElementIdentifier($identifierCollection, $value->getProperty())
-            );
-        }
+        if ($value instanceof DomIdentifierReferenceInterface) {
+            if (DomIdentifierReferenceType::ELEMENT === $value->getType()) {
+                return new DomIdentifierValue(
+                    $this->findElementIdentifier($identifierCollection, $value->getProperty())
+                );
+            }
 
-        if ($value instanceof AttributeReference) {
-            $property = $value->getProperty();
+            if (DomIdentifierReferenceType::ATTRIBUTE === $value->getType()) {
+                $property = $value->getProperty();
 
-            if (substr_count($property, self::ELEMENT_NAME_ATTRIBUTE_NAME_DELIMITER) > 0) {
-                list($elementName, $attributeName) = explode('.', $property);
+                if (substr_count($property, self::ELEMENT_NAME_ATTRIBUTE_NAME_DELIMITER) > 0) {
+                    list($elementName, $attributeName) = explode('.', $property);
 
-                $elementIdentifier = $this->findElementIdentifier($identifierCollection, $elementName);
-                $attributeIdentifier = new AttributeIdentifier($elementIdentifier, $attributeName);
+                    $elementIdentifier = $this->findElementIdentifier($identifierCollection, $elementName);
+                    $elementIdentifier = $elementIdentifier->withAttributeName($attributeName);
 
-                return new AttributeValue($attributeIdentifier);
+                    return new DomIdentifierValue($elementIdentifier);
+                }
             }
         }
 
@@ -81,16 +81,16 @@ class ValueResolver
      *
      * @param string $elementName
      *
-     * @return ElementIdentifierInterface
+     * @return DomIdentifierInterface
      * @throws UnknownElementException
      */
     private function findElementIdentifier(
         IdentifierCollectionInterface $identifierCollection,
         string $elementName
-    ): ElementIdentifierInterface {
+    ): DomIdentifierInterface {
         $identifier = $identifierCollection->getIdentifier($elementName);
 
-        if (!$identifier instanceof ElementIdentifierInterface) {
+        if (!$identifier instanceof DomIdentifierInterface) {
             throw new UnknownElementException($elementName);
         }
 
