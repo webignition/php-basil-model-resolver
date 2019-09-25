@@ -9,15 +9,11 @@ use webignition\BasilModel\Action\ActionInterface;
 use webignition\BasilModel\Action\ActionTypes;
 use webignition\BasilModel\Action\InputAction;
 use webignition\BasilModel\Action\InteractionAction;
-use webignition\BasilModel\Identifier\AttributeIdentifier;
-use webignition\BasilModel\Identifier\ElementIdentifier;
+use webignition\BasilModel\Identifier\DomIdentifier;
 use webignition\BasilModel\Identifier\IdentifierCollection;
 use webignition\BasilModel\Identifier\IdentifierCollectionInterface;
 use webignition\BasilModel\Page\Page;
-use webignition\BasilModel\Value\AttributeValue;
-use webignition\BasilModel\Value\ElementExpression;
-use webignition\BasilModel\Value\ElementExpressionType;
-use webignition\BasilModel\Value\ElementValue;
+use webignition\BasilModel\Value\DomIdentifierValue;
 use webignition\BasilModel\Value\LiteralValue;
 use webignition\BasilModelFactory\Action\ActionFactory;
 use webignition\BasilModelProvider\Page\EmptyPageProvider;
@@ -98,7 +94,7 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
     {
         $actionFactory = ActionFactory::createFactory();
         $namedCssElementIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR),
+            '.selector',
             1,
             'element_name'
         );
@@ -139,10 +135,8 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
                 'identifierCollection' => new IdentifierCollection(),
                 'expectedAction' => new InputAction(
                     'set ".selector" to page_import_name.elements.element_name',
-                    new ElementIdentifier(
-                        new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR)
-                    ),
-                    new ElementValue($namedCssElementIdentifier),
+                    new DomIdentifier('.selector'),
+                    new DomIdentifierValue($namedCssElementIdentifier),
                     '".selector" to page_import_name.elements.element_name'
                 ),
             ],
@@ -173,7 +167,7 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
     {
         $actionFactory = ActionFactory::createFactory();
         $namedCssElementIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR),
+            '.selector',
             1,
             'element_name'
         );
@@ -200,10 +194,8 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
                 ]),
                 'expectedAction' => new InputAction(
                     'set ".selector" to $elements.element_name',
-                    new ElementIdentifier(
-                        new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR)
-                    ),
-                    new ElementValue($namedCssElementIdentifier),
+                    new DomIdentifier('.selector'),
+                    new DomIdentifierValue($namedCssElementIdentifier),
                     '".selector" to $elements.element_name'
                 ),
             ],
@@ -227,7 +219,7 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
     {
         $actionFactory = ActionFactory::createFactory();
         $namedCssElementIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR),
+            '.selector',
             1,
             'element_name'
         );
@@ -243,15 +235,8 @@ class ActionResolverTest extends \PHPUnit\Framework\TestCase
                 ]),
                 'expectedAction' => new InputAction(
                     'set ".selector" to $elements.element_name.attribute_name',
-                    new ElementIdentifier(
-                        new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR)
-                    ),
-                    new AttributeValue(
-                        new AttributeIdentifier(
-                            $namedCssElementIdentifier,
-                            'attribute_name'
-                        )
-                    ),
+                    new DomIdentifier('.selector'),
+                    new DomIdentifierValue($namedCssElementIdentifier->withAttributeName('attribute_name')),
                     '".selector" to $elements.element_name.attribute_name'
                 ),
             ],
