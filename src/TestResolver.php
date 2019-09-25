@@ -3,6 +3,8 @@
 namespace webignition\BasilModelResolver;
 
 use webignition\BasilContextAwareException\ExceptionContext\ExceptionContextInterface;
+use webignition\BasilModel\Exception\InvalidAssertionExaminedValueException;
+use webignition\BasilModel\Exception\InvalidAssertionExpectedValueException;
 use webignition\BasilModel\Identifier\IdentifierCollection;
 use webignition\BasilModel\Test\Test;
 use webignition\BasilModel\Test\TestInterface;
@@ -47,6 +49,8 @@ class TestResolver
      * @return TestInterface
      *
      * @throws CircularStepImportException
+     * @throws InvalidAssertionExaminedValueException
+     * @throws InvalidAssertionExpectedValueException
      * @throws UnknownDataProviderException
      * @throws UnknownElementException
      * @throws UnknownPageElementException
