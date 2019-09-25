@@ -16,7 +16,7 @@ use webignition\BasilModel\Assertion\ComparisonAssertion;
 use webignition\BasilModel\Assertion\ExaminationAssertion;
 use webignition\BasilModel\DataSet\DataSet;
 use webignition\BasilModel\DataSet\DataSetCollection;
-use webignition\BasilModel\Identifier\ElementIdentifier;
+use webignition\BasilModel\Identifier\DomIdentifier;
 use webignition\BasilModel\Identifier\IdentifierCollection;
 use webignition\BasilModel\Page\Page;
 use webignition\BasilModel\Step\PendingImportResolutionStep;
@@ -26,10 +26,9 @@ use webignition\BasilModel\Test\Test;
 use webignition\BasilModel\Test\TestInterface;
 use webignition\BasilModel\Value\Assertion\ExaminedValue;
 use webignition\BasilModel\Value\Assertion\ExpectedValue;
-use webignition\BasilModel\Value\DataParameter;
-use webignition\BasilModel\Value\ElementExpression;
-use webignition\BasilModel\Value\ElementExpressionType;
-use webignition\BasilModel\Value\ElementValue;
+use webignition\BasilModel\Value\DomIdentifierValue;
+use webignition\BasilModel\Value\ObjectValue;
+use webignition\BasilModel\Value\ObjectValueType;
 use webignition\BasilModel\Value\PageElementReference;
 use webignition\BasilModelFactory\Action\ActionFactory;
 use webignition\BasilModelFactory\AssertionFactory;
@@ -84,22 +83,17 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
         $actionFactory = ActionFactory::createFactory();
         $assertionFactory = AssertionFactory::createFactory();
 
-        $actionSelectorIdentifier = new ElementIdentifier(
-            new ElementExpression('.action-selector', ElementExpressionType::CSS_SELECTOR)
-        );
-
-        $assertionSelectorIdentifier = new ElementIdentifier(
-            new ElementExpression('.assertion-selector', ElementExpressionType::CSS_SELECTOR)
-        );
+        $actionSelectorIdentifier = new DomIdentifier('.action-selector');
+        $assertionSelectorIdentifier = new DomIdentifier('.assertion-selector');
 
         $namedActionSelectorIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new ElementExpression('.action-selector', ElementExpressionType::CSS_SELECTOR),
+            '.action-selector',
             1,
             'action_selector'
         );
 
         $namedAssertionSelectorIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new ElementExpression('.assertion-selector', ElementExpressionType::CSS_SELECTOR),
+            '.assertion-selector',
             1,
             'assertion_selector'
         );
@@ -128,16 +122,16 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                     new InputAction(
                         'set ".action-selector" to $data.key1',
                         $actionSelectorIdentifier,
-                        new DataParameter('$data.key1', 'key1'),
+                        new ObjectValue(ObjectValueType::DATA_PARAMETER, '$data.key1', 'key1'),
                         '".action-selector" to $data.key1'
                     )
                 ],
                 [
                     new ComparisonAssertion(
                         '".assertion-selector" is $data.key2',
-                        new ExaminedValue(new ElementValue($assertionSelectorIdentifier)),
+                        new ExaminedValue(new DomIdentifierValue($assertionSelectorIdentifier)),
                         AssertionComparison::IS,
-                        new ExpectedValue(new DataParameter('$data.key2', 'key2'))
+                        new ExpectedValue(new ObjectValue(ObjectValueType::DATA_PARAMETER, '$data.key2', 'key2'))
                     )
                 ]
             ))->withDataSetCollection(new DataSetCollection([
@@ -219,9 +213,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         [
                             new ExaminationAssertion(
                                 '".assertion-selector" exists',
-                                new ExaminedValue(
-                                    new ElementValue($assertionSelectorIdentifier)
-                                ),
+                                new ExaminedValue(new DomIdentifierValue($assertionSelectorIdentifier)),
                                 AssertionComparison::EXISTS
                             )
                         ]
@@ -271,9 +263,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         [
                             new ExaminationAssertion(
                                 'page_import_name.elements.assertion_selector exists',
-                                new ExaminedValue(
-                                    new ElementValue($namedAssertionSelectorIdentifier)
-                                ),
+                                new ExaminedValue(new DomIdentifierValue($namedAssertionSelectorIdentifier)),
                                 AssertionComparison::EXISTS
                             )
                         ]
@@ -317,9 +307,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         [
                             new ExaminationAssertion(
                                 '".assertion-selector" exists',
-                                new ExaminedValue(
-                                    new ElementValue($assertionSelectorIdentifier)
-                                ),
+                                new ExaminedValue(new DomIdentifierValue($assertionSelectorIdentifier)),
                                 AssertionComparison::EXISTS
                             )
                         ]
@@ -374,9 +362,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         [
                             new ExaminationAssertion(
                                 '$elements.assertion_selector exists',
-                                new ExaminedValue(
-                                    new ElementValue($namedAssertionSelectorIdentifier)
-                                ),
+                                new ExaminedValue(new DomIdentifierValue($namedAssertionSelectorIdentifier)),
                                 AssertionComparison::EXISTS
                             )
                         ]
@@ -475,12 +461,12 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         new Uri('https://example.com'),
                         new IdentifierCollection([
                             TestIdentifierFactory::createElementIdentifier(
-                                new ElementExpression('.action-selector', ElementExpressionType::CSS_SELECTOR),
+                                '.action-selector',
                                 1,
                                 'action_selector'
                             ),
                             TestIdentifierFactory::createElementIdentifier(
-                                new ElementExpression('.assertion-selector', ElementExpressionType::CSS_SELECTOR),
+                                '.assertion-selector',
                                 1,
                                 'assertion_selector'
                             ),
@@ -505,7 +491,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         [
                             new ExaminationAssertion(
                                 '$elements.assertion_selector exists',
-                                new ExaminedValue(new ElementValue($namedAssertionSelectorIdentifier)),
+                                new ExaminedValue(new DomIdentifierValue($namedAssertionSelectorIdentifier)),
                                 AssertionComparison::EXISTS
                             ),
                         ]
@@ -525,7 +511,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         [
                             new ExaminationAssertion(
                                 '$elements.assertion_selector exists',
-                                new ExaminedValue(new ElementValue($namedAssertionSelectorIdentifier)),
+                                new ExaminedValue(new DomIdentifierValue($namedAssertionSelectorIdentifier)),
                                 AssertionComparison::EXISTS
                             ),
                         ]
@@ -552,12 +538,12 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         new Uri('https://example.com'),
                         new IdentifierCollection([
                             TestIdentifierFactory::createElementIdentifier(
-                                new ElementExpression('.action-selector', ElementExpressionType::CSS_SELECTOR),
+                                '.action-selector',
                                 1,
                                 'action_selector'
                             ),
                             TestIdentifierFactory::createElementIdentifier(
-                                new ElementExpression('.assertion-selector', ElementExpressionType::CSS_SELECTOR),
+                                '.assertion-selector',
                                 1,
                                 'assertion_selector'
                             ),
@@ -575,16 +561,18 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                             new InputAction(
                                 'set $elements.action_selector to $data.key1',
                                 $namedActionSelectorIdentifier,
-                                new DataParameter('$data.key1', 'key1'),
+                                new ObjectValue(ObjectValueType::DATA_PARAMETER, '$data.key1', 'key1'),
                                 '$elements.action_selector to $data.key1'
                             )
                         ],
                         [
                             new ComparisonAssertion(
                                 '$elements.assertion_selector is $data.key2',
-                                new ExaminedValue(new ElementValue($namedAssertionSelectorIdentifier)),
+                                new ExaminedValue(new DomIdentifierValue($namedAssertionSelectorIdentifier)),
                                 AssertionComparison::IS,
-                                new ExpectedValue(new DataParameter('$data.key2', 'key2'))
+                                new ExpectedValue(
+                                    new ObjectValue(ObjectValueType::DATA_PARAMETER, '$data.key2', 'key2')
+                                )
                             )
                         ]
                     ),
@@ -607,16 +595,18 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                             new InputAction(
                                 'set $elements.action_selector to $data.key1',
                                 $namedActionSelectorIdentifier,
-                                new DataParameter('$data.key1', 'key1'),
+                                new ObjectValue(ObjectValueType::DATA_PARAMETER, '$data.key1', 'key1'),
                                 '$elements.action_selector to $data.key1'
                             )
                         ],
                         [
                             new ComparisonAssertion(
                                 '$elements.assertion_selector is $data.key2',
-                                new ExaminedValue(new ElementValue($namedAssertionSelectorIdentifier)),
+                                new ExaminedValue(new DomIdentifierValue($namedAssertionSelectorIdentifier)),
                                 AssertionComparison::IS,
-                                new ExpectedValue(new DataParameter('$data.key2', 'key2'))
+                                new ExpectedValue(
+                                    new ObjectValue(ObjectValueType::DATA_PARAMETER, '$data.key2', 'key2')
+                                )
                             )
                         ]
                     ))->withDataSetCollection(new DataSetCollection([

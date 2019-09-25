@@ -5,23 +5,17 @@
 namespace webignition\BasilModelResolver\Tests\Unit;
 
 use Nyholm\Psr7\Uri;
-use webignition\BasilModel\Identifier\AttributeIdentifier;
-use webignition\BasilModel\Identifier\ElementIdentifier;
+use webignition\BasilModel\Identifier\DomIdentifier;
 use webignition\BasilModel\Identifier\IdentifierCollection;
 use webignition\BasilModel\Identifier\IdentifierCollectionInterface;
 use webignition\BasilModel\Page\Page;
-use webignition\BasilModel\Value\AttributeReference;
-use webignition\BasilModel\Value\AttributeValue;
-use webignition\BasilModel\Value\BrowserProperty;
-use webignition\BasilModel\Value\DataParameter;
-use webignition\BasilModel\Value\ElementExpression;
-use webignition\BasilModel\Value\ElementExpressionType;
-use webignition\BasilModel\Value\ElementReference;
-use webignition\BasilModel\Value\ElementValue;
-use webignition\BasilModel\Value\EnvironmentValue;
+use webignition\BasilModel\Value\DomIdentifierReference;
+use webignition\BasilModel\Value\DomIdentifierReferenceType;
+use webignition\BasilModel\Value\DomIdentifierValue;
 use webignition\BasilModel\Value\LiteralValue;
+use webignition\BasilModel\Value\ObjectValue;
+use webignition\BasilModel\Value\ObjectValueType;
 use webignition\BasilModel\Value\PageElementReference;
-use webignition\BasilModel\Value\PageProperty;
 use webignition\BasilModel\Value\ValueInterface;
 use webignition\BasilModelProvider\Page\EmptyPageProvider;
 use webignition\BasilModelProvider\Page\PageProvider;
@@ -58,46 +52,34 @@ class ValueResolverTest extends \PHPUnit\Framework\TestCase
     public function resolveNoChangesDataProvider(): array
     {
         return [
-            'literal css selector' => [
-                'value' => new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR),
-            ],
             'literal string' => [
                 'value' => new LiteralValue('value'),
             ],
-            'literal xpath expression' => [
-                'value' => new ElementExpression('//h1', ElementExpressionType::XPATH_EXPRESSION),
-            ],
             'browser object property' => [
-                'value' => new BrowserProperty('$browser.size', 'size'),
+                'value' => new ObjectValue(ObjectValueType::BROWSER_PROPERTY, '$browser.size', 'size'),
             ],
             'data parameter' => [
-                'value' => new DataParameter('$data.key', 'key'),
+                'value' => new ObjectValue(ObjectValueType::DATA_PARAMETER, '$data.key', 'key'),
             ],
             'page object property' => [
-                'value' => new PageProperty('$page.url', 'url'),
+                'value' => new ObjectValue(ObjectValueType::PAGE_PROPERTY, '$page.url', 'url'),
             ],
             'environment parameter' => [
-                'value' => new EnvironmentValue('$env.KEY', 'KEY'),
+                'value' => new ObjectValue(ObjectValueType::ENVIRONMENT_PARAMETER, '$env.KEY', 'KEY'),
             ],
             'element value' => [
-                'value' => new ElementValue(
-                    new ElementIdentifier(
-                        new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR)
-                    )
+                'value' => new DomIdentifierValue(
+                    new DomIdentifier('.selector')
                 ),
             ],
             'attribute value' => [
-                'value' => new AttributeValue(
-                    new AttributeIdentifier(
-                        new ElementIdentifier(
-                            new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR)
-                        ),
-                        'attribute_name'
-                    )
+                'value' => new DomIdentifierValue(
+                    (new DomIdentifier('.selector'))->withAttributeName('attribute_name')
                 ),
             ],
             'malformed attribute parameter' => [
-                'value' => new AttributeReference(
+                'value' => new DomIdentifierReference(
+                    DomIdentifierReferenceType::ATTRIBUTE,
                     '$elements.element_attribute_name',
                     'element_attribute_name'
                 )
@@ -123,7 +105,7 @@ class ValueResolverTest extends \PHPUnit\Framework\TestCase
     public function resolveCreatesNewValueDataProvider(): array
     {
         $namedCssSelectorIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR),
+            '.selector',
             1,
             'element_name'
         );
@@ -144,18 +126,23 @@ class ValueResolverTest extends \PHPUnit\Framework\TestCase
                     )
                 ]),
                 'identifierCollection' => new IdentifierCollection(),
-                'expectedValue' => new ElementValue($namedCssSelectorIdentifier)
+                'expectedValue' => new DomIdentifierValue($namedCssSelectorIdentifier)
             ],
             'element parameter' => [
-                'value' => new ElementReference('$elements.element_name', 'element_name'),
+                'value' => new DomIdentifierReference(
+                    DomIdentifierReferenceType::ELEMENT,
+                    '$elements.element_name',
+                    'element_name'
+                ),
                 'pageProvider' => new EmptyPageProvider(),
                 'identifierCollection' => new IdentifierCollection([
                     $namedCssSelectorIdentifier,
                 ]),
-                'expectedValue' => new ElementValue($namedCssSelectorIdentifier)
+                'expectedValue' => new DomIdentifierValue($namedCssSelectorIdentifier)
             ],
-            'attribute parameter parameter' => [
-                'value' => new AttributeReference(
+            'attribute parameter' => [
+                'value' => new DomIdentifierReference(
+                    DomIdentifierReferenceType::ATTRIBUTE,
                     '$elements.element_name.attribute_name',
                     'element_name.attribute_name'
                 ),
@@ -163,11 +150,8 @@ class ValueResolverTest extends \PHPUnit\Framework\TestCase
                 'identifierCollection' => new IdentifierCollection([
                     $namedCssSelectorIdentifier,
                 ]),
-                'expectedValue' => new AttributeValue(
-                    new AttributeIdentifier(
-                        $namedCssSelectorIdentifier,
-                        'attribute_name'
-                    )
+                'expectedValue' => new DomIdentifierValue(
+                    ($namedCssSelectorIdentifier)->withAttributeName('attribute_name')
                 ),
             ],
         ];
@@ -175,7 +159,11 @@ class ValueResolverTest extends \PHPUnit\Framework\TestCase
 
     public function testResolveThrowsUnknownElementException()
     {
-        $value = new ElementReference('$elements.element_name', 'element_name');
+        $value = new DomIdentifierReference(
+            DomIdentifierReferenceType::ELEMENT,
+            '$elements.element_name',
+            'element_name'
+        );
 
         $this->expectException(UnknownElementException::class);
         $this->expectExceptionMessage('Unknown element "element_name"');

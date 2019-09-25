@@ -14,7 +14,6 @@ use webignition\BasilModel\Action\InteractionAction;
 use webignition\BasilModel\Assertion\AssertionComparison;
 use webignition\BasilModel\Assertion\ComparisonAssertion;
 use webignition\BasilModel\Assertion\ExaminationAssertion;
-use webignition\BasilModel\Identifier\AttributeIdentifier;
 use webignition\BasilModel\Identifier\IdentifierCollection;
 use webignition\BasilModel\Identifier\ReferenceIdentifier;
 use webignition\BasilModel\Page\Page;
@@ -23,11 +22,9 @@ use webignition\BasilModel\Step\Step;
 use webignition\BasilModel\Step\StepInterface;
 use webignition\BasilModel\Value\Assertion\ExaminedValue;
 use webignition\BasilModel\Value\Assertion\ExpectedValue;
-use webignition\BasilModel\Value\AttributeValue;
-use webignition\BasilModel\Value\ElementExpression;
-use webignition\BasilModel\Value\ElementExpressionType;
-use webignition\BasilModel\Value\ElementReference;
-use webignition\BasilModel\Value\ElementValue;
+use webignition\BasilModel\Value\DomIdentifierReference;
+use webignition\BasilModel\Value\DomIdentifierReferenceType;
+use webignition\BasilModel\Value\DomIdentifierValue;
 use webignition\BasilModel\Value\LiteralValue;
 use webignition\BasilModel\Value\PageElementReference;
 use webignition\BasilModelFactory\Action\ActionFactory;
@@ -109,7 +106,7 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
         ];
 
         $namedCssElementIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR),
+            '.selector',
             1,
             'element_name'
         );
@@ -124,7 +121,7 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
             new InputAction(
                 'set page_import_name.elements.element_name to page_import_name.elements.element_name',
                 $namedCssElementIdentifier,
-                new ElementValue($namedCssElementIdentifier),
+                new DomIdentifierValue($namedCssElementIdentifier),
                 'page_import_name.elements.element_name to page_import_name.elements.element_name'
             ),
             new InteractionAction(
@@ -136,17 +133,15 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
             new InputAction(
                 'set $elements.element_name to $elements.element_name',
                 $namedCssElementIdentifier,
-                new ElementValue($namedCssElementIdentifier),
+                new DomIdentifierValue($namedCssElementIdentifier),
                 '$elements.element_name to $elements.element_name'
             ),
             new InputAction(
                 'set ".selector" to $elements.element_name.attribute_name',
                 TestIdentifierFactory::createElementIdentifier(
-                    new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR)
+                    '.selector'
                 ),
-                new AttributeValue(
-                    new AttributeIdentifier($namedCssElementIdentifier, 'attribute_name')
-                ),
+                new DomIdentifierValue($namedCssElementIdentifier->withAttributeName('attribute_name')),
                 '".selector" to $elements.element_name.attribute_name'
             ),
         ];
@@ -155,26 +150,26 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
             new ExaminationAssertion(
                 'page_import_name.elements.element_name exists',
                 new ExaminedValue(
-                    new ElementValue($namedCssElementIdentifier)
+                    new DomIdentifierValue($namedCssElementIdentifier)
                 ),
                 AssertionComparison::EXISTS
             ),
             new ComparisonAssertion(
                 'page_import_name.elements.element_name is page_import_name.elements.element_name',
-                new ExaminedValue(new ElementValue($namedCssElementIdentifier)),
+                new ExaminedValue(new DomIdentifierValue($namedCssElementIdentifier)),
                 AssertionComparison::IS,
-                new ExpectedValue(new ElementValue($namedCssElementIdentifier))
+                new ExpectedValue(new DomIdentifierValue($namedCssElementIdentifier))
             ),
             new ExaminationAssertion(
                 '$elements.element_name exists',
-                new ExaminedValue(new ElementValue($namedCssElementIdentifier)),
+                new ExaminedValue(new DomIdentifierValue($namedCssElementIdentifier)),
                 AssertionComparison::EXISTS
             ),
             new ExaminationAssertion(
                 '$elements.element_name.attribute_name exists',
-                new ExaminedValue(new AttributeValue(
-                    new AttributeIdentifier($namedCssElementIdentifier, 'attribute_name')
-                )),
+                new ExaminedValue(
+                    new DomIdentifierValue($namedCssElementIdentifier->withAttributeName('attribute_name'))
+                ),
                 AssertionComparison::EXISTS
             ),
         ];
@@ -274,18 +269,16 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
         $actionFactory = ActionFactory::createFactory();
         $assertionFactory = AssertionFactory::createFactory();
 
-        $examinedIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new ElementExpression('.examined-selector', ElementExpressionType::CSS_SELECTOR)
-        );
+        $examinedIdentifier = TestIdentifierFactory::createElementIdentifier('.examined-selector');
 
         $namedExaminedIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new ElementExpression('.examined-selector', ElementExpressionType::CSS_SELECTOR),
+            '.examined-selector',
             1,
             'examined'
         );
 
         $namedExpectedIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new ElementExpression('.expected-selector', ElementExpressionType::CSS_SELECTOR),
+            '.expected-selector',
             1,
             'expected'
         );
@@ -330,7 +323,7 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
                     new InputAction(
                         'set ".examined-selector" to page_import_name.elements.expected',
                         $examinedIdentifier,
-                        new ElementValue($namedExpectedIdentifier),
+                        new DomIdentifierValue($namedExpectedIdentifier),
                         '".examined-selector" to page_import_name.elements.expected'
                     )
                 ], []),
@@ -350,7 +343,7 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
                 'expectedStep' => new Step([], [
                     new ExaminationAssertion(
                         'page_import_name.elements.examined exists',
-                        new ExaminedValue(new ElementValue($namedExaminedIdentifier)),
+                        new ExaminedValue(new DomIdentifierValue($namedExaminedIdentifier)),
                         AssertionComparison::EXISTS
                     ),
                 ]),
@@ -372,9 +365,9 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
                 'expectedStep' => new Step([], [
                     new ComparisonAssertion(
                         '".examined-selector" is page_import_name.elements.expected',
-                        new ExaminedValue(new ElementValue($examinedIdentifier)),
+                        new ExaminedValue(new DomIdentifierValue($examinedIdentifier)),
                         AssertionComparison::IS,
-                        new ExpectedValue(new ElementValue($namedExpectedIdentifier))
+                        new ExpectedValue(new DomIdentifierValue($namedExpectedIdentifier))
                     ),
                 ]),
             ],
@@ -407,7 +400,7 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
                     new InputAction(
                         'set ".examined-selector" to $elements.expected',
                         $examinedIdentifier,
-                        new ElementValue($namedExpectedIdentifier),
+                        new DomIdentifierValue($namedExpectedIdentifier),
                         '".examined-selector" to $elements.expected'
                     )
                 ], []))->withIdentifierCollection(new IdentifierCollection([
@@ -427,12 +420,7 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
                     new InputAction(
                         'set ".examined-selector" to $elements.expected.attribute_name',
                         $examinedIdentifier,
-                        new AttributeValue(
-                            new AttributeIdentifier(
-                                $namedExpectedIdentifier,
-                                'attribute_name'
-                            )
-                        ),
+                        new DomIdentifierValue($namedExpectedIdentifier->withAttributeName('attribute_name')),
                         '".examined-selector" to $elements.expected.attribute_name'
                     )
                 ], []))->withIdentifierCollection(new IdentifierCollection([
@@ -449,7 +437,7 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
                 'expectedStep' => (new Step([], [
                     new ExaminationAssertion(
                         '$elements.examined exists',
-                        new ExaminedValue(new ElementValue($namedExaminedIdentifier)),
+                        new ExaminedValue(new DomIdentifierValue($namedExaminedIdentifier)),
                         AssertionComparison::EXISTS
                     ),
                 ]))->withIdentifierCollection(new IdentifierCollection([
@@ -466,9 +454,9 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
                 'expectedStep' => (new Step([], [
                     new ComparisonAssertion(
                         '".examined-selector" is $elements.expected',
-                        new ExaminedValue(new ElementValue($examinedIdentifier)),
+                        new ExaminedValue(new DomIdentifierValue($examinedIdentifier)),
                         AssertionComparison::IS,
-                        new ExpectedValue(new ElementValue($namedExpectedIdentifier))
+                        new ExpectedValue(new DomIdentifierValue($namedExpectedIdentifier))
                     ),
                 ]))->withIdentifierCollection(new IdentifierCollection([
                     $namedExpectedIdentifier,
@@ -485,12 +473,7 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
                     new ExaminationAssertion(
                         '$elements.examined.attribute_name exists',
                         new ExaminedValue(
-                            new AttributeValue(
-                                new AttributeIdentifier(
-                                    $namedExaminedIdentifier,
-                                    'attribute_name'
-                                )
-                            )
+                            new DomIdentifierValue($namedExaminedIdentifier->withAttributeName('attribute_name'))
                         ),
                         AssertionComparison::EXISTS
                     ),
@@ -510,15 +493,10 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
                 'expectedStep' => (new Step([], [
                     new ComparisonAssertion(
                         '".examined-selector" is $elements.expected.attribute_name',
-                        new ExaminedValue(new ElementValue($examinedIdentifier)),
+                        new ExaminedValue(new DomIdentifierValue($examinedIdentifier)),
                         AssertionComparison::IS,
                         new ExpectedValue(
-                            new AttributeValue(
-                                new AttributeIdentifier(
-                                    $namedExpectedIdentifier,
-                                    'attribute_name'
-                                )
-                            )
+                            new DomIdentifierValue($namedExpectedIdentifier->withAttributeName('attribute_name'))
                         )
                     ),
                 ]))->withIdentifierCollection(new IdentifierCollection([
@@ -539,13 +517,13 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
             'non-resolvable identifier collection: no resolvable element identifiers' => [
                 'step' => (new Step([], []))->withIdentifierCollection(new IdentifierCollection([
                     TestIdentifierFactory::createElementIdentifier(
-                        new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR)
+                        '.selector'
                     ),
                 ])),
                 'pageProvider' => new EmptyPageProvider(),
                 'expectedStep' => (new Step([], []))->withIdentifierCollection(new IdentifierCollection([
                     TestIdentifierFactory::createElementIdentifier(
-                        new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR)
+                        '.selector'
                     ),
                 ]))
             ],
@@ -567,7 +545,7 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
         );
 
         $resolvedElementIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR),
+            '.selector',
             1,
             'element_name'
         );
@@ -593,7 +571,7 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
             new ExaminationAssertion(
                 'page_import_name.elements.element_name exists',
                 new ExaminedValue(
-                    new ElementValue(
+                    new DomIdentifierValue(
                         $resolvedElementIdentifier
                     )
                 ),
@@ -768,7 +746,11 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
                         'click $elements.element_name',
                         ActionTypes::CLICK,
                         ReferenceIdentifier::createElementReferenceIdentifier(
-                            new ElementReference('$elements.element_name', 'element_name')
+                            new DomIdentifierReference(
+                                DomIdentifierReferenceType::ELEMENT,
+                                '$elements.element_name',
+                                'element_name'
+                            )
                         ),
                         '$elements.element_name'
                     )
@@ -785,7 +767,11 @@ class StepResolverTest extends \PHPUnit\Framework\TestCase
                     new ExaminationAssertion(
                         '$elements.element_name exists',
                         new ExaminedValue(
-                            new ElementReference('$elements.element_name', 'element_name')
+                            new DomIdentifierReference(
+                                DomIdentifierReferenceType::ELEMENT,
+                                '$elements.element_name',
+                                'element_name'
+                            )
                         ),
                         AssertionComparison::EXISTS
                     )

@@ -10,10 +10,8 @@ use webignition\BasilModel\Identifier\IdentifierCollectionInterface;
 use webignition\BasilModel\Identifier\IdentifierInterface;
 use webignition\BasilModel\Identifier\ReferenceIdentifier;
 use webignition\BasilModel\Page\Page;
-use webignition\BasilModel\Value\AttributeReference;
-use webignition\BasilModel\Value\ElementExpression;
-use webignition\BasilModel\Value\ElementExpressionType;
-use webignition\BasilModel\Value\ElementReference;
+use webignition\BasilModel\Value\DomIdentifierReference;
+use webignition\BasilModel\Value\DomIdentifierReferenceType;
 use webignition\BasilModel\Value\PageElementReference;
 use webignition\BasilModelProvider\Page\EmptyPageProvider;
 use webignition\BasilModelProvider\Page\PageProvider;
@@ -54,17 +52,7 @@ class IdentifierResolverTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'wrong identifier type' => [
-                'identifier' => TestIdentifierFactory::createElementIdentifier(
-                    new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR)
-                ),
-            ],
-            'wrong value type' => [
-                'identifier' => ReferenceIdentifier::createPageElementReferenceIdentifier(
-                    new AttributeReference(
-                        '$elements.element_name.attribute_name',
-                        'element_name.attribute_name'
-                    )
-                ),
+                'identifier' => TestIdentifierFactory::createElementIdentifier('.selector'),
             ],
         ];
     }
@@ -85,10 +73,7 @@ class IdentifierResolverTest extends \PHPUnit\Framework\TestCase
 
     public function resolveDataProvider(): array
     {
-        $cssElementIdentifier = TestIdentifierFactory::createElementIdentifier(
-            new ElementExpression('.selector', ElementExpressionType::CSS_SELECTOR)
-        );
-
+        $cssElementIdentifier = TestIdentifierFactory::createElementIdentifier('.selector');
         $cssElementIdentifierWithName = $cssElementIdentifier->withName('element_name');
 
         return [
@@ -113,7 +98,11 @@ class IdentifierResolverTest extends \PHPUnit\Framework\TestCase
             ],
             'element parameter' => [
                 'identifier' => ReferenceIdentifier::createElementReferenceIdentifier(
-                    new ElementReference('$elements.element_name', 'element_name')
+                    new DomIdentifierReference(
+                        DomIdentifierReferenceType::ELEMENT,
+                        '$elements.element_name',
+                        'element_name'
+                    )
                 ),
                 'pageProvider' => new EmptyPageProvider(),
                 'identifierCollection' => new IdentifierCollection([
@@ -127,7 +116,11 @@ class IdentifierResolverTest extends \PHPUnit\Framework\TestCase
     public function testResolveThrowsUnknownElementException()
     {
         $identifier = ReferenceIdentifier::createElementReferenceIdentifier(
-            new ElementReference('$elements.element_name', 'element_name')
+            new DomIdentifierReference(
+                DomIdentifierReferenceType::ELEMENT,
+                '$elements.element_name',
+                'element_name'
+            )
         );
 
         $this->expectException(UnknownElementException::class);

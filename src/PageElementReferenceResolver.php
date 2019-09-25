@@ -2,7 +2,7 @@
 
 namespace webignition\BasilModelResolver;
 
-use webignition\BasilModel\Identifier\ElementIdentifierInterface;
+use webignition\BasilModel\Identifier\DomIdentifierInterface;
 use webignition\BasilModel\Value\PageElementReference;
 use webignition\BasilModelProvider\Exception\UnknownPageException;
 use webignition\BasilModelProvider\Page\PageProviderInterface;
@@ -18,7 +18,7 @@ class PageElementReferenceResolver
      * @param PageElementReference $value
      * @param PageProviderInterface $pageProvider
      *
-     * @return ElementIdentifierInterface
+     * @return DomIdentifierInterface
      *
      * @throws UnknownPageElementException
      * @throws UnknownPageException
@@ -26,12 +26,12 @@ class PageElementReferenceResolver
     public function resolve(
         PageElementReference $value,
         PageProviderInterface $pageProvider
-    ): ElementIdentifierInterface {
+    ): DomIdentifierInterface {
         $page = $pageProvider->findPage($value->getObject());
-        $elementIdentifier = $page->getIdentifier($value->getProperty());
+        $identifier = $page->getIdentifier($value->getProperty());
 
-        if ($elementIdentifier instanceof ElementIdentifierInterface) {
-            return $elementIdentifier;
+        if ($identifier instanceof DomIdentifierInterface) {
+            return $identifier;
         }
 
         throw new UnknownPageElementException($value->getObject(), $value->getProperty());
