@@ -33,7 +33,7 @@
     },
     "require": {
         "php": ">=7.2",
-        "webignition/php-basil-models": ">=0.83,<1",
+        "webignition/php-basil-models": ">=0.88,<1",
         "webignition/php-basil-model-provider": ">=0.2,<1",
         "webignition/php-basil-context-aware-exception": ">=0.1,<1"
     },
@@ -43,6 +43,6 @@
         "phpstan/phpstan": "^0.11.5",
         "nyholm/psr7": "^1.1",
         "webignition/php-basil-test-identifier-factory": ">=0.5,<1",
-        "webignition/php-basil-model-factory": ">=0.30,<1"
+        "webignition/php-basil-model-factory": ">=0.33,<1"
     }
 }
