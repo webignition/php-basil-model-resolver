@@ -5,8 +5,6 @@ namespace webignition\BasilModelResolver;
 use webignition\BasilContextAwareException\ExceptionContext\ExceptionContextInterface;
 use webignition\BasilModel\Action\ActionInterface;
 use webignition\BasilModel\Assertion\AssertionInterface;
-use webignition\BasilModel\Exception\InvalidAssertionExaminedValueException;
-use webignition\BasilModel\Exception\InvalidAssertionExpectedValueException;
 use webignition\BasilModel\Identifier\IdentifierCollection;
 use webignition\BasilModel\Step\PendingImportResolutionStep;
 use webignition\BasilModel\Step\StepInterface;
@@ -44,8 +42,6 @@ class StepResolver
      *
      * @return StepInterface
      *
-     * @throws InvalidAssertionExaminedValueException
-     * @throws InvalidAssertionExpectedValueException
      * @throws UnknownElementException
      * @throws UnknownPageElementException
      * @throws UnknownPageException
@@ -142,8 +138,6 @@ class StepResolver
      *
      * @return StepInterface
      *
-     * @throws InvalidAssertionExaminedValueException
-     * @throws InvalidAssertionExpectedValueException
      * @throws UnknownElementException
      * @throws UnknownPageElementException
      * @throws UnknownPageException

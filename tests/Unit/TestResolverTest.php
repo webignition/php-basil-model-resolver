@@ -24,8 +24,6 @@ use webignition\BasilModel\Step\Step;
 use webignition\BasilModel\Test\Configuration;
 use webignition\BasilModel\Test\Test;
 use webignition\BasilModel\Test\TestInterface;
-use webignition\BasilModel\Value\Assertion\ExaminedValue;
-use webignition\BasilModel\Value\Assertion\ExpectedValue;
 use webignition\BasilModel\Value\DomIdentifierValue;
 use webignition\BasilModel\Value\ObjectValue;
 use webignition\BasilModel\Value\ObjectValueType;
@@ -129,9 +127,9 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                 [
                     new ComparisonAssertion(
                         '".assertion-selector" is $data.key2',
-                        new ExaminedValue(new DomIdentifierValue($assertionSelectorIdentifier)),
+                        new DomIdentifierValue($assertionSelectorIdentifier),
                         AssertionComparison::IS,
-                        new ExpectedValue(new ObjectValue(ObjectValueType::DATA_PARAMETER, '$data.key2', 'key2'))
+                        new ObjectValue(ObjectValueType::DATA_PARAMETER, '$data.key2', 'key2')
                     )
                 ]
             ))->withDataSetCollection(new DataSetCollection([
@@ -213,7 +211,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         [
                             new ExaminationAssertion(
                                 '".assertion-selector" exists',
-                                new ExaminedValue(new DomIdentifierValue($assertionSelectorIdentifier)),
+                                new DomIdentifierValue($assertionSelectorIdentifier),
                                 AssertionComparison::EXISTS
                             )
                         ]
@@ -263,7 +261,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         [
                             new ExaminationAssertion(
                                 'page_import_name.elements.assertion_selector exists',
-                                new ExaminedValue(new DomIdentifierValue($namedAssertionSelectorIdentifier)),
+                                new DomIdentifierValue($namedAssertionSelectorIdentifier),
                                 AssertionComparison::EXISTS
                             )
                         ]
@@ -307,7 +305,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         [
                             new ExaminationAssertion(
                                 '".assertion-selector" exists',
-                                new ExaminedValue(new DomIdentifierValue($assertionSelectorIdentifier)),
+                                new DomIdentifierValue($assertionSelectorIdentifier),
                                 AssertionComparison::EXISTS
                             )
                         ]
@@ -362,7 +360,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         [
                             new ExaminationAssertion(
                                 '$elements.assertion_selector exists',
-                                new ExaminedValue(new DomIdentifierValue($namedAssertionSelectorIdentifier)),
+                                new DomIdentifierValue($namedAssertionSelectorIdentifier),
                                 AssertionComparison::EXISTS
                             )
                         ]
@@ -491,7 +489,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         [
                             new ExaminationAssertion(
                                 '$elements.assertion_selector exists',
-                                new ExaminedValue(new DomIdentifierValue($namedAssertionSelectorIdentifier)),
+                                new DomIdentifierValue($namedAssertionSelectorIdentifier),
                                 AssertionComparison::EXISTS
                             ),
                         ]
@@ -511,7 +509,7 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         [
                             new ExaminationAssertion(
                                 '$elements.assertion_selector exists',
-                                new ExaminedValue(new DomIdentifierValue($namedAssertionSelectorIdentifier)),
+                                new DomIdentifierValue($namedAssertionSelectorIdentifier),
                                 AssertionComparison::EXISTS
                             ),
                         ]
@@ -568,11 +566,9 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         [
                             new ComparisonAssertion(
                                 '$elements.assertion_selector is $data.key2',
-                                new ExaminedValue(new DomIdentifierValue($namedAssertionSelectorIdentifier)),
+                                new DomIdentifierValue($namedAssertionSelectorIdentifier),
                                 AssertionComparison::IS,
-                                new ExpectedValue(
-                                    new ObjectValue(ObjectValueType::DATA_PARAMETER, '$data.key2', 'key2')
-                                )
+                                new ObjectValue(ObjectValueType::DATA_PARAMETER, '$data.key2', 'key2')
                             )
                         ]
                     ),
@@ -602,11 +598,9 @@ class TestResolverTest extends \PHPUnit\Framework\TestCase
                         [
                             new ComparisonAssertion(
                                 '$elements.assertion_selector is $data.key2',
-                                new ExaminedValue(new DomIdentifierValue($namedAssertionSelectorIdentifier)),
+                                new DomIdentifierValue($namedAssertionSelectorIdentifier),
                                 AssertionComparison::IS,
-                                new ExpectedValue(
-                                    new ObjectValue(ObjectValueType::DATA_PARAMETER, '$data.key2', 'key2')
-                                )
+                                new ObjectValue(ObjectValueType::DATA_PARAMETER, '$data.key2', 'key2')
                             )
                         ]
                     ))->withDataSetCollection(new DataSetCollection([
